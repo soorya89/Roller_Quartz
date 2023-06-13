@@ -1,0 +1,428 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.7.0/nouislider.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.7.0/nouislider.min.js"></script>
+<style>
+    .product__item.hidden {
+    display: none;
+}
+.noUi-connect {
+    background: #000!important;
+}
+</style>
+
+
+
+<!-- Breadcrumb Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="d-flex justify-content-between"> 
+                <div class="breadcrumb__links">
+                    <a href="/"><i class="fa fa-home"></i> Home</a>
+                    <span>Shop</span>
+                </div>
+                
+                <form class="search-form d-flex" action="/search" method="GET">
+                    <input  class="form-control"type="text" name="query" placeholder="Search products...">
+                    <button class="btn btn-dark" type="submit">Search</button>
+                  </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb End -->
+
+<!-- Shop Section Begin -->
+<section class="shop spad">
+    <div class="container">
+        <div class="row">
+         
+            <div class="col-lg-3 col-md-3">
+                <form id="filter-form">
+                <div class="shop__sidebar">
+                    <div class="sidebar__categories">
+                        <div class="section-title">
+                            <h4>Categories</h4>
+                        </div>
+                        <% var i=1 %>
+                        <%= console.log(viewCategory) %>
+                            <div class="categories__accordion">
+                                <ul>
+                                    <% viewCategory.forEach(function(category) { %>
+
+                                        <li><label><input class="checkBox-input"type="checkbox"value="<%= category._id %>" id="category<%= i %>"  name="category<%= i %>"><label >                                                 
+                                            </label><%= category.CategoryName %></li>
+                                            <% i++ %>
+                                        <% }) %>
+                                </ul>
+                            </div>
+                            <div class="section-title">
+                                <h4>Brand</h4>
+                            </div>
+                            <div class="categories__accordion">
+                                <ul>
+                                    <% viewBrand.forEach(function(brand) { %>
+                                        <li><label><input type="checkbox"class="checkBox-input"value="<%= brand._id %>"id="brand<%= i %>"name="brand<%= i %>">
+                                                <%= brand.brandName %>
+                                            </label></li>
+                              
+                                        <% }) %>
+                                </ul>
+                            </div>
+                    </div>
+                    <div class="sidebar__filter">
+                        <div class="section-title">
+                            <h4>Shop by price</h4>
+                        </div>
+                        <div class="filter-range-wrap">
+                         
+
+                                <div id="rangeSlider"></div><br>
+
+											<div>
+												<span>From: </span>
+												<span id="from-span">skjdfks</span>
+												<input type="hidden" id="minamount" name="min"
+													style="max-width: 100px;"><br>
+												<span>To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+												<span id="to-span">sfdgs</span>
+												<input type="hidden" id="maxamount" name="max"
+													style="max-width: 100px;">
+											</div>
+                          
+                        </div>
+                          <button class="btn btn-dark " type="submit"id="filterButton">Filter</button>
+                          <button class="btn btn-dark " id="clearButton">Clear All</button>
+
+                       </div>
+
+                </div>
+            </form>
+            </div>
+
+
+            <div class="col-lg-9 col-md-9" id="productContainer"> 
+                <div id="productContainer">
+                <div class="row property__gallery" id="product-row">
+
+                 
+                    <% product.forEach(function(product){ %>
+                        <div class="col-lg-4 col-md-4 col-sm-6 mix women">
+                            <div class="product__item "data-category-id="<%= product.category %>">
+                                <div class="product__item__pic set-bg"
+                                    data-setbg="/uploads/<%= product.productImage[product.featuredImage || 0] %>">
+                                    <!-- <div class="label new">New</div> -->
+                                    <ul class="product__hover">
+
+                                        <li><button onclick="cartIncrement('<%=product._id%>')"><span
+                                                    class="icon_cart_alt"></span></button></li>
+                                        <li><a href="/uploads/<%= product.productImage[product.featuredImage || 0] %>"
+                                                class="image-popup"><span class="arrow_expand"></span></a></li>
+                                        <li><a href="#"data-value="<%= product._id%>" class="add-produtToWishlist"><span class="icon_heart_alt"></span></a></li>
+
+                                    </ul>
+                                </div>
+                                <div class="product__item__text">
+
+                                    <h6><a href="/productDetails/<%=product._id %>">
+                                            <%= product.productName%>
+                                        </a></h6>
+
+                                    <div class="product__price">
+                                        &#x20B9 <%= product.productPrice %>
+                                    </div>
+                                    <!-- <span
+                                    class="badge  text-success">
+                                    In stock
+                                </span> -->
+                                </div>
+                            </div>
+                        </div>
+                        <% })%>
+                     
+            </div>
+        </div>
+              
+
+</section>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://unpkg.com/sweetalert@2"></script>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var rangeSlider = document.getElementById('rangeSlider');
+    var sliderValue1 = document.getElementById('minamount');
+    var sliderValue2 = document.getElementById('maxamount');
+
+    var fromSpan = document.getElementById('from-span');
+    var toSpan = document.getElementById('to-span');
+
+    noUiSlider.create(rangeSlider, {
+        start: [0, 50000], // Initial range values
+        connect: true, // Enable the range between the handles
+        range: {
+            'min': 0,
+            'max': 50000
+        }
+    });
+
+    rangeSlider.noUiSlider.on('update', function (values) {
+        minamount.value = Math.floor(values[0]);
+        maxamount.value = Math.floor(values[1]);
+        fromSpan.innerHTML = Number(Math.floor(values[0])).toLocaleString('en-in', {
+            style: 'currency',
+            currency: 'INR',
+            minimumFractionDigits: 0
+        });
+        toSpan.innerHTML = Number(Math.floor(values[1])).toLocaleString('en-in', {
+            style: 'currency',
+            currency: 'INR',
+            minimumFractionDigits: 0
+        });
+    });
+});
+
+const checkboxes = document.querySelectorAll('.checkBox-input');
+
+const clearButton = document.getElementById('clearButton');
+const productsRow = document.getElementById('product-row');
+
+
+
+$('#filter-form').submit(function (e) {
+    e.preventDefault();
+    const min = document.getElementById('minamount').value;
+    const max = document.getElementById('maxamount').value;
+
+    let selectedCategories = [];
+    $('input:checked').each(function () {
+        selectedCategories.push($(this).val());
+    });
+   
+    filterData(selectedCategories, min, max);
+});
+
+function filterData(selectedCategories, min, max) {
+    let data = {
+        selectedCategories: selectedCategories,
+        min: min,
+        max: max
+    };
+    data = JSON.stringify(data);
+    let html = '';
+
+    $.ajax({
+        url: '/product?filterData=' + data,
+        type: 'get',
+    })
+    .done((res) => {
+
+        for(let i=0;i<res.product.length;i++){
+
+        html += ` <div class="col-lg-4 col-md-4 col-sm-6 mix women">
+                        <div class="product__item" data-category-id="${res.product[i].category}">
+                            <div class="product__item__pic set-bg"style="background-image:url(/uploads/${res.product[i].productImage[res.product[i].featuredImage || 0]})"
+                                data-setbg="/uploads/${res.product[i].productImage[res.product[i].featuredImage || 0]}">
+                                <!-- <div class="label new">New</div> -->
+                                <ul class="product__hover">
+                                    <li><button onclick="cartIncrement('${res.product[i]._id}')"><span class="icon_cart_alt"></span></button></li>
+                                    <li><a href="/uploads/${res.product[i].productImage[res.product[i].featuredImage || 0]}" class="image-popup"><span class="arrow_expand"></span></a></li>
+                                    <li><a href="#" data-value="${res.product[i]._id}" class="add-produtToWishlist"><span class="icon_heart_alt"></span></a></li>
+                                </ul>
+                            </div>
+                            <div class="product__item__text">
+                                <h6><a href="/productDetails/${res.product[i]._id}">${res.product[i].productName}</a></h6>
+                                <div class="product__price">&#x20B9; ${res.product[i].productPrice}</div>
+                                <!-- <span class="badge text-success">In stock</span> -->
+                            </div>
+                        </div>
+                    </div> `;
+        }
+
+        productsRow.innerHTML = html;
+    })
+    .fail((error) => {
+        console.log(error);
+    });
+}
+checkboxes.forEach(function (checkbox) {
+		checkbox.addEventListener('change', function () {
+			console.log("change");
+
+			const checkboxeStates = Array.from(checkboxes).map(function (cb) {
+				return {
+					id: cb.id,
+					checked: cb.checked
+				}
+			})
+			localStorage.setItem('checkboxeStates', JSON.stringify(checkboxeStates))
+		})
+	});
+
+	clearButton.addEventListener('click', function (e) {
+	e.preventDefault();
+	
+	checkboxes.forEach(function (checkbox) {
+		checkbox.checked = false
+	})
+
+	localStorage.removeItem('checkboxStates');
+});
+
+// Restore the checkbox states when the page loads
+window.addEventListener('load', function () {
+	const savedStates = localStorage.getItem('checkboxStates');
+	const checkboxStates = JSON.parse(savedStates);
+
+	if (Array.isArray(checkboxStates)) {
+		checkboxStates.forEach(function (state) {
+			const checkbox = document.getElementById(state.id);
+			if (checkbox) {
+				checkbox.checked = state.checked;
+			}
+		});
+	}
+});
+
+    
+    function cartIncrement(productId) {
+
+
+        $.ajax({
+            url: '/addToCart',
+            data: {
+                productId: productId
+            },
+            method: 'post',
+            success: (response) => {
+                if (response.response) {
+                    if (response.limit) {
+                        Swal.fire(
+                            'sorry!',
+                            'sorry you have only buy 10 quantity or product i sout of stock',
+                            'warning'
+                        )
+                    } else {
+
+                        Swal.fire({
+                            position: 'top',
+                            icon: 'success',
+                            title: 'Product added to cart',
+                            showConfirmButton: false,
+                            timer: 1600
+                        })
+                    }
+                } else {
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'alert',
+                        title: 'Login needed',
+                        showConfirmButton: false,
+                        timer: 1600
+                    })
+                    setTimeout(() => {
+
+                        window.location = '/login'
+                    }, 1700)
+                }
+            }
+        })
+    }
+    // $(document).ready(function () {
+	// 	$('.add-produtToWishlist').click(function (e) {
+	// 		e.preventDefault();
+	// 		const productId = $(this).data('value');
+		
+	// 		$.ajax({
+	// 			url: '/add-to-wishList',
+	// 			type: 'post',
+	// 			data:{productId:productId}
+	// 		})
+	// 			.done((res) => {
+	// 				console.log(res.message);
+    //                 Swal.fire({
+    //                         position: 'top',
+    //                         icon: 'success',
+    //                         title: 'Product added to wishlist',
+    //                         showConfirmButton: false,
+    //                         timer: 1600
+    //                     })
+	// 					.then(() => {
+	// 						location.reload()
+	// 					})
+	// 			})
+	// 			.fail((err) => {
+	// 				console.log(err);
+	// 			})
+	// 	})
+	// })
+    $(document).ready(function () {
+  $('.add-produtToWishlist').click(function (e) {
+    e.preventDefault();
+    const productId = $(this).data('value');
+    console.log("Clicked:", productId);
+
+    $.ajax({
+      url: '/add-to-wishList',
+      type: 'post',
+      data: { productId: productId }
+    })
+      .done((res) => {
+        console.log("Response:", res);
+
+        if (res.response) {
+          console.log("Product added to wishlist");
+
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Product added to Wishlist',
+            showConfirmButton: false,
+            timer: 1600
+          }).then(() => {
+            location.reload();
+          });
+        } else {
+          if (res.message === "Product already exists in the wishlist.") {
+            console.log("Product already exists in the wishlist");
+
+            Swal.fire({
+              position: 'center',
+              icon: 'error',
+              title: 'Product already added to Wishlist',
+              showConfirmButton: false,
+              timer: 1600
+            });
+          } else {
+            console.log("Login needed");
+
+            Swal.fire({
+              position: 'center',
+              icon: 'warning',
+              title: 'Login needed',
+              showConfirmButton: false,
+              timer: 1600
+            }).then(() => {
+              window.location = '/login';
+            });
+          }
+        }
+      })
+      .fail((xhr, status, error) => {
+        console.log("AJAX request failed. Error:", error);
+      });
+  });
+});
+;
+
+
+
+
+  
+</script>

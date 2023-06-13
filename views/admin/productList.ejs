@@ -1,0 +1,210 @@
+
+<%- include('../partials/admin-header') %>
+<style>
+    .square-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+    }
+</style>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Products </h2>
+            
+        </div>
+        <div>
+            <!-- <a href="#" class="btn btn-light rounded font-md">Export</a>
+            <a href="#" class="btn btn-light rounded  font-md">Import</a> -->
+            <a href="/admin/addProducts" class="btn btn-primary btn-sm rounded">Add Product</a>
+        </div>
+    </div>
+    <div class="card mb-4">
+        
+        <table class="table" id="product-list">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Product Name</th>
+
+                    <!-- <th scope="col">Product Description</th> -->
+                    <th scope="col">Product Color</th>
+
+                    <th scope="col">Product Quantity</th>
+                    <th scope="col">Product Price</th>
+                    <th scope="col">Brand</th>
+                    <th scope="col">Product Category</th>
+                    <th scope="col">Product Status</th>
+
+                    <th scope="col">Actions</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+
+                <% count=1 %>
+                    <% product.forEach(function(product) { %>
+                        <tr>
+                            <td>
+                                <%= count%>
+                            </td>
+                            <td>
+                                <img class="img-thumbnail square-image "
+                                    src="/uploads/<%= product.productImage[product.featuredImage || 0] %>" alt="">
+                            </td>
+                            <td>
+                               <p   style="text-overflow: ellipsis;
+                               display: block;
+                               overflow: hidden;
+                               white-space: nowrap;
+                               width: 100;" title="<%= product.productName %>"> <%= product.productName %></p>
+                            </td>
+                           
+                            <td>
+                                <%= product.productColor %>
+                            </td>
+                            <td>
+                                <%= product.productQuantity %>
+                            </td>
+                            <td>
+                                <%= product.productPrice %>
+                            </td>
+                            <td>
+                                <% for (let i=0; i < viewBrand.length; i++) { %>
+                                    <% if (String(viewBrand[i]._id)===String(product.brand)) { %>
+                                        <% var bnd=viewBrand[i].brandName;%>
+                                            <% } %>
+                                                <% } %>
+                                                <p   style="text-overflow: ellipsis;
+                                                display: block;
+                                                overflow: hidden;
+                                                white-space: nowrap;
+                                                width: 100;" title=" <%= bnd %>">  <%= bnd %></p>
+                                                   
+                            </td>
+                            <td>
+                                <% for (let i=0; i < viewCategory.length; i++) { %>
+                                    <% if (String(viewCategory[i]._id)===String(product.category)) { %>
+                                        <% var cat=viewCategory[i].CategoryName;%>
+                                            <% } %>
+                                                <% } %>
+                                                    <%= cat %>
+                            </td>
+                            <td>
+                                <%if(product.productStatus){%>
+                                <span class="badge rounded-pill alert-success">Listed</span>
+                            <%}else{%>
+                                <span class="badge rounded-pill alert-success">Unlisted</span>
+                                <%}%>
+                            </td>
+                            <td class="text-end">
+                                <% if(product.productStatus){%>
+                                 <button data-product id="<%= product._id %>" class="btn btn-sm btn-brand rounded font-sm "onclick="blockProduct('<%= product._id%>')" >Block</button>
+                                  <%}else{%>
+                                    <button data-blockproductid="<%= product._id %>" class="btn btn-sm btn-brand-danger rounded font-sm  "onclick="unblockProduct('<%= product._id%>')" >Unblock</button>
+                                    <%}%>
+                                </td>
+                               <td> <a href="/admin/editProduct/<%= product._id %>" onclick="showAlert()"class="btn btn-sm font-sm rounded btn-brand">
+                                    Edit
+                                </a></td>
+
+                                <% count++ %>
+                                <% }); %> 
+                        </tr>
+                        
+            </tbody>
+            
+        </table>
+        </section>
+        <script>
+            function showAlert() {
+                alert("Are you want to edit!");
+            }
+        </script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+         
+            function unblockProduct(productId){
+        const url2 = `/admin/unblockProduct/${productId}`;
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'ok'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+
+                try {
+                    const response = await fetch(url2, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    });
+                    console.log(response);
+                    Swal.fire(
+                        'Unblocked!',
+                        'User has been Unblocked.',
+                        'success'
+                    ).then(res => {
+                        window.location.reload()
+                    })
+
+
+                } catch (error) {
+                    console.error(`${error.message}`);
+                }
+
+
+            }
+        })
+}
+function blockProduct(productId){
+        const url = `/admin/blockProduct/${productId}`;
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'ok'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+
+                try {
+                    const response = await fetch(url, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    });
+                    console.log(response);
+                    Swal.fire(
+                        'Blocked!',
+                        'User has been Blocked.',
+                        'success'
+                    ).then(res => {
+                        window.location.reload()
+                    })
+
+
+                } catch (error) {
+                    console.error(`${error.message}`);
+                }
+
+
+            }
+        })
+    }
+
+
+        </script>
+            <%- include('../partials/admin-footer') %>

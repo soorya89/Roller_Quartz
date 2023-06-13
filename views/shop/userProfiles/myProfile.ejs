@@ -1,0 +1,479 @@
+<%- include('../../partials/header') %>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<main class="main">
+  <div class="page-header breadcrumb-wrap">
+      <div class="container">
+        <div class="breadcrumb__links mt-4 mb-4">
+            <a href="/"><i class="fa fa-home"></i> Home</a>
+            <span>My Profile</span>
+        </div>
+      </div>
+  </div>
+  <section class="pt-150 pb-150">
+      <div class="container">
+          
+              
+                  <div class="row">
+                      <div class="col-md-3">
+                          <div class="dashboard-menu">
+                              <ul class="nav flex-column" role="tablist">
+                                <li class="nav-item text-center">
+                                    <img src="/images/avadhar.png" class="mt-4" width="30%" alt="" >
+                                    <h6 class="mt-3"><b><%= user.name %></b></h6>
+                                    <p class="mb-0"><%= user.email %></p>
+                                    <p><%= user.phone %></p>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false"><i class="fi-rs-shopping-bag mr-10"></i>Orders</a>
+                                </li>
+                                  <!-- <li class="nav-item">
+
+                                      <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" aria-controls="dashboard" aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>Account</a>
+                                  </li> -->
+                                 
+                                  <li class="nav-item">
+                                      <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#track-orders" role="tab" aria-controls="track-orders" aria-selected="false"><i class="fi-rs-shopping-cart-check mr-10"></i>Track Your Order</a>
+                                  </li>
+                                  <li class="nav-item">
+                                      <a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="true"><i class="fi-rs-marker mr-10"></i>My Address</a>
+                                  </li>
+                                  <li class="nav-item">
+                                      <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="true"><i class="fi-rs-user mr-10"></i>Account details</a>
+                                  </li>
+                                
+                              </ul>
+                          </div>
+                      </div>
+                      <div class="col-md-9">
+                          <div class="tab-content dashboard-content">
+                              <div class="tab-pane fade " id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+                                
+                              </div>
+                              <div class="tab-pane fade active show" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                                  <div class="card">
+                                      <div class="card-header">
+                                          <h5 class="mb-0">Your Orders</h5>
+                                      </div>
+                                      <div class="card-body p-0">
+                                          <div class="table-responsive">
+                                              <table class="table table-striped table-hover" id="userOrerList">
+                                                  <thead>
+                                                      <tr>
+                                                          <th>No</th>
+                                                          <th>Order</th>
+                                                          <th>Date</th>
+                                                          <th>Status</th>
+                                                          <th>Total</th>
+                                                          <th>Actions</th>
+                                                      </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                    <% count=1 %>
+                                                    <% orders.forEach(order=>{%>
+                                                        <tr>
+                                                            <td><%= count %></td>
+                                                            <td><%= order._id %></td>
+                                                            <td><%= order.orderDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) %></td>
+                                                            <td><%= order.orderStatus %></td>
+                                                            <td>Rs.<%= order.totalAmount %></td>
+                                                            <td><a href="/viewOrderDetails/<%= order._id %>" class="btn btn-sm btn-dark d-block">View</a></td>
+                                                        </tr>
+                                                        <% count++ %>
+                                                    <% }) %>
+                                                </tbody>
+                                                  
+                                              </table>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
+                                  <div class="card">
+                                      <div class="card-header">
+                                          <h5 class="mb-0">Orders tracking</h5>
+                                      </div>
+                                      <div class="card-body contact-from-area">
+                                          <p>To track your order please enter your OrderID in the box below and press "Track" button. This was given to you on your receipt and in the confirmation email you should have received.</p>
+                                          <div class="row">
+                                              <div class="col-lg-8">
+                                                  <form class="contact-form-style mt-30 mb-50" action="#" method="post">
+                                                      <div class="input-style mb-20">
+                                                          <label>Order ID</label>
+                                                          <input name="order-id" placeholder="Found in your order confirmation email" type="text" class="square">
+                                                      </div>
+                                                      <div class="input-style mb-20">
+                                                          <label>Billing email</label>
+                                                          <input name="billing-email" placeholder="Email you used during checkout" type="email" class="square">
+                                                      </div>
+                                                      <button class="submit submit-auto-width" type="submit">Track</button>
+                                                  </form>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
+                                <div ><h4 class="mb-3"><b>Billing Address</b></h4>
+                                    <button type="button"style="position:absolute;right:15px;top:8px" class="btn btn-dark btn-sm" data-toggle="modal" data-target="#exampleModal">
+                                        Add address
+                                    </button>
+                                </div>
+                                  <div class="address-grid" >
+                                    
+                                    <% if (address.length==0) { %>
+                                     
+                                   
+                                        <div style="grid-column: span 2;" class=" text-center">
+                                            <p class="text-center">No address found.</p>
+                                            <button type="button"style="position:absolute;right:15px;top:8px" class="btn btn-dark btn-sm" data-toggle="modal" data-target="#exampleModal">
+                                                Add address
+                                            </button>
+                                        </div>
+                                       <% } else { %>
+                                        <% for (let i=0; i < address.length; i++) { %>
+                                            <% if (address[i].addStatus==true) { %>
+                                            
+                                                <div class="card mb-lg-0">
+                                                    
+
+                                                    <div class="card-body">
+                                                        <h6 class="mb-2"><b><%= address[i].firstname %>
+                                                            <%= address[i].lastname %></b></h6>
+                                                        <address>
+                                                            <p><%= address[i].address %>, <%= address[i].city %>, <%= address[i].state %> <%= address[i].zip %> </p>
+                                                         
+                                                        </address>
+                                                        <a href="#" class="edit-address btn btn-dark btn-sm stylish-button"data-target="#EditAddress"data-toggle="modal" onclick="getAddress('<%= address[i]._id %>')">Edit</a>
+
+                                                        
+                                                        <a href="#" class="delete-address" data-address-id="<%= address[i]._id %>" ><button class="btn btn-outline-dark btn-sm stylish-button">Delete</button>
+                                                            </a>
+                                                    </div>
+                                                </div>
+                                                <% } %>
+                                            <% } %>
+                                            <% } %>
+                                </div></div>
+                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Add address</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+            
+                                            <form action="/addAddressProfile"id="placeOrder-form" class="checkout__form" method="post">
+                                                <div class="row">
+                                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                                        <div class="checkout__form__input">
+                                                            <p>First Name <span>*</span></p>
+                                                            <input type="text" name="firstname"id="firstname">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                                        <div class="checkout__form__input">
+                                                            <p>Last Name <span>*</span></p>
+                                                            <input type="text" name="lastname">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12">
+            
+                                                        <div class="checkout__form__input">
+                                                            <p>Address <span>*</span></p>
+                                                            <input type="text" placeholder="Street Address" name="address"id="address">
+            
+                                                        </div>
+                                                        <div class="checkout__form__input">
+                                                            <p>Town/City <span>*</span></p>
+                                                            <input type="text" name="city"id="city">
+                                                        </div>
+                                                        <div class="checkout__form__input">
+                                                            <p>Country/State <span>*</span></p>
+                                                            <input type="text" name="state" id="state">
+                                                        </div>
+                                                        <div class="checkout__form__input">
+                                                            <p>Postcode/Zip <span>*</span></p>
+                                                            <input type="text" name="zip" id="zip">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                                        <div class="checkout__form__input">
+                                                            <p>Phone <span>*</span></p>
+                                                            <input type="text" nmae="phone"id="phone">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                                        <div class="checkout__form__input">
+                                                            <p>Email <span>*</span></p>
+                                                            <input type="text" name="email"id="email">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12">
+                                                       
+                                                        <button type="submit" class="btn btn-dark" data-toggle="modal"
+                                                            data-target="#exampleModal">
+                                                            Save
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                              </div>
+                                        </form>
+            
+            
+                                    </div>
+            
+                                </div>
+                            </div>
+                            <div class="modal fade" id="EditAddress" tabindex="-1" role="dialog"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Add address</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+            
+                                            <form id="edit-address-form" class="checkout__form" method="post">
+                                                <div class="row">
+                                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                                        <div class="checkout__form__input">
+                                                            <p>First Name <span>*</span></p>
+                                                            <input type="text" name="firstname"id="firstname1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                                        <div class="checkout__form__input">
+                                                            <p>Last Name <span>*</span></p>
+                                                            <input type="text" name="lastname" id="lastname1">
+                                                        </div>
+                                                        <input name="addressId" id="addressId"  type="text" hidden>
+                                                    </div>
+                                                  
+                                                    <div class="col-lg-12">
+            
+                                                        <div class="checkout__form__input">
+                                                            <p>Address <span>*</span></p>
+                                                            <input type="text" placeholder="Street Address" name="address"id="address1">
+            
+                                                        </div>
+                                                        <div class="checkout__form__input">
+                                                            <p>Town/City <span>*</span></p>
+                                                            <input type="text" name="city"id="city1">
+                                                        </div>
+                                                        <div class="checkout__form__input">
+                                                            <p>Country/State <span>*</span></p>
+                                                            <input type="text" name="state" id="state1">
+                                                        </div>
+                                                        <div class="checkout__form__input">
+                                                            <p>Postcode/Zip <span>*</span></p>
+                                                            <input type="text" name="zip" id="zip1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                                        <div class="checkout__form__input">
+                                                            <p>Phone <span>*</span></p>
+                                                            <input type="text" name="phone" id="phone1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                                        <div class="checkout__form__input">
+                                                            <p>Email <span>*</span></p>
+                                                            <input type="text" name="email" id="email1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12">                    
+                                                        <button type="submit"id="updateButton" class="btn btn-dark" data-toggle="modal">
+                                                            
+                                                            Update
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                              </div>
+                                        </form>
+            
+            
+                                    </div>
+            
+                                </div>
+                            </div>
+                     </div> 
+
+             
+          
+      
+  </section>
+</main>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Assume you have a form with the ID "placeOrder-form" and a submit button with the class "submit"
+$(document).on("submit", "#placeOrder-form", function (event) {
+  event.preventDefault();
+
+  var form = $(this);
+  var url = form.attr("action");
+
+  $.ajax({
+    type: "POST",
+    url: url,
+    data: form.serialize(),
+    dataType: "json",
+    success: function (response) {
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: response.success,
+      }).then((result) => {
+        // Optionally, you can perform additional actions after the Swal is closed
+        if (result.isConfirmed) {
+            window.location.reload();
+        }
+      });
+    },
+    error: function (xhr, status, error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "An error occurred while adding the address.",
+      });
+    },
+  });
+});
+
+$(document).on('click', '.delete-address', function (event) {
+  event.preventDefault();
+  var addressId = $(this).data('address-id');
+
+  // Make AJAX request to delete the address
+  $.ajax({
+    url: '/deleteAddress',
+    method: 'POST',
+    data: { addressId: addressId },
+    success: function (response) {
+      // Show success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: response.message,
+      }).then(function () {
+        // Reload the address section
+        window.location.reload();
+      });
+    },
+    error: function (xhr, status, error) {
+      // Show error message
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while deleting the address.',
+      });
+    },
+  });
+});
+
+
+
+
+// Function to fetch address details
+function getAddress(addressId) {
+  console.log(addressId);
+  $.ajax({
+    url: '/editAddress/' + addressId,
+    type: 'get',
+  })
+    .done((res) => {
+      console.log(res.address);
+      $('#addressId').val(res.address._id);
+      $('#firstname1').val(res.address.firstname);
+      $('#lastname1').val(res.address.lastname);
+      $('#phone1').val(res.address.phone);
+      
+      $('#email1').val(res.address.email);
+      $('#address1').val(res.address.address);
+      $('#state1').val(res.address.state);
+      $('#city1').val(res.address.city);
+      $('#zip1').val(res.address.zip);
+
+      // Display the modal
+      $('#EditAddress').modal('show');
+    })
+    .fail((error) => {
+      console.log(error);
+    });
+}
+
+$(document).ready(function () {
+    console.log("***************************");
+		$('#edit-address-form').submit((e) => {
+			e.preventDefault();
+			$.ajax({
+				url: '/editAddressPost',
+				type: 'post',
+				data: $('#edit-address-form').serialize()
+			})
+				.done((res) => {
+					Swal.fire({
+						title: "Success",
+						text: "Address Updated.",
+						icon: "success",
+						button: "OK",
+					}).then(() => {
+						console.log(res.message);
+						window.location.reload();
+					})
+				})
+				.fail((err) => {
+					console.log(err);
+				})
+		})
+	})
+
+
+
+    $(document).ready(function () {
+        // Add event listener to the delete address buttons
+        $('.delete-address').on('click', function (e) {
+            e.preventDefault();
+
+            // Get the address ID from the data attribute
+            const addressId = $(this).data('address-id');
+
+            // Confirm the deletion
+            if (confirm('Are you sure you want to delete this address?')) {
+                // Send the AJAX request to delete the address
+                $.ajax({
+                    type: 'POST',
+                    url: '/deleteAddress',
+                    data: { addressId: addressId },
+                    success: function (response) {
+                        if (response.success) {
+                            // Address deleted successfully
+
+
+                            toastr.error('Failed to delete the address', '', { "toastClass": "toast-error" });
+                            console.error('Failed to delete the address')
+                        } else {
+                            toastr.success('Address successfully deleted', '', { "toastClass": "toast-success" });
+                            // Perform any necessary UI updates or redirects
+                            console.log('Address deleted successfully');
+                        }
+                    },
+
+                    error: function () {
+                        toastr.error('Failed to delete the address', '', { "toastClass": "toast-error" });
+                        console.error('Failed to delete the address');
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<%- include('../../partials/footer') %>

@@ -1,0 +1,141 @@
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Edit address
+</button>
+
+
+<div class="card-body">
+  <div class="row">
+
+    <div class="col-sm-3">
+    </div>
+    <div class="col-sm-12 text-secondary">
+      <form action="/add-address" id="add-address-form" method="post" >
+        <div class="row">
+          <div class="col-sm-6">
+            <label>First Name *</label>
+            <input name="fname" type="text" class="form-control" required>
+          </div><!-- End .col-sm-6 -->
+
+          <input name="id" value="" type="text" hidden>
+
+          <div class="col-sm-6">
+            <label>Last Name *</label>
+            <input name="lname" type="text" class="form-control" required>
+          </div><!-- End .col-sm-6 -->
+        </div><!-- End .row -->
+
+        <div class="row">
+          <div class="col-sm-6">
+            <label>Mobile number *</label>
+            <input name="mobile" type="text" class="form-control" required>
+          </div><!-- End .col-sm-6 -->
+
+          <div class="col-sm-6">
+            <label>Email address *</label>
+            <input name="email" type="email" class="form-control" required>
+          </div><!-- End .col-sm-6 -->
+        </div><!-- End .row -->
+
+
+        <label>Address *</label>
+        <input name="address" type="text" class="form-control" required>
+
+
+        <div class="row">
+          <div class="col-sm-6">
+            <label>Country *</label>
+            <input name="country" type="text" class="form-control" required>
+          </div><!-- End .col-sm-6 -->
+
+          <div class="col-sm-6">
+
+            <label>State *</label>
+            <input name="state" type="text" class="form-control" required>
+          </div><!-- End .col-sm-6 -->
+        </div><!-- End .row -->
+
+
+        <div class="row">
+          <div class="col-sm-6">
+            <label>City *</label>
+            <input name="city" type="text" class="form-control" required>
+          </div><!-- End .col-sm-6 -->
+
+          <div class="col-sm-6">
+
+            <label>Pincode *</label>
+            <input name="pincode" type="text" class="form-control" required>
+          </div><!-- End .col-sm-6 -->
+        </div><!-- End .row -->
+
+        <button type="submit" class="btn btn-dark mt-3">
+          <span>SAVE</span>
+          <i class="icon-long-arrow-right"></i>
+        </button>
+      </form>
+
+      <hr>
+    </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+aria-hidden="true">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header">
+  <h5 class="modal-title" id="exampleModalLabel">Add address</h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form action="/add-address" method="post" id="form">
+    <div class="mb-1">
+      <label for="phonenumber" class="col-form-label">Phonenumber</label>
+      <input required type="text" class="form-control" id="phonenumber" name="phonenumber" />
+    </div>
+    <div class="mb-1">
+      <label for="housename" class="col-form-label">House name</label>
+      <input required type="text" class="form-control" id="housename" name="housename" />
+    </div>
+    <div class="mb-1">
+      <label for="postoffice" class="col-form-label">Post Office</label>
+      <input required type="text" class="form-control" id="postoffice" name="postoffice" />
+    </div>
+    <div class="mb-1">
+      <label for="area" class="col-form-label">Area</label>
+      <input required type="text" class="form-control" id="area" name="area" />
+    </div>
+    <div class="mb-1">
+      <label for="district" class="col-form-label">District</label>
+      <input required type="text" class="form-control" id="district" name="district" />
+    </div>
+    <div class="mb-1">
+      <label for="state" class="col-form-label">State</label>
+      <input required type="text" class="form-control" id="state" name="state" />
+    </div>
+    <div class="mb-1">
+      <label for="pin" class="col-form-label">Pincode</label>
+      <input required type="text" class="form-control" id="pin" name="pin" />
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <button type="submit" class="btn btn-primary">Save Address</button>
+    </div>
+
+
+  </form>
+
+</div>
+
+</div>
+</div>
+</div>

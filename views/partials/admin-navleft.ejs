@@ -1,0 +1,104 @@
+<aside class="navbar-aside" id="offcanvas_aside">
+    <div class="aside-top">
+        <a href="index.html" class="brand-wrap">
+            <img src="/images/logoWhite.png" class="logo" alt="Evara Dashboard">
+        </a>
+        <div>
+            <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+        </div>
+    </div>
+    <nav>
+        <ul class="menu-aside">
+            <li class="<%=   currentUrl === '/' ? 'menu-item active' : 'menu-item'  %>">
+                <a class="menu-link" href="/admin"> <i class="icon material-icons md-home"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li class="<%= currentUrl === '/userList'? 'menu-item has-submenu active' : 'menu-item has-submenu'  %>">
+                <a class="menu-link" href="#"> <i class="icon material-icons md-person"></i>
+                    <span class="text">Account</span>
+                </a>
+                <div class="submenu">
+                    <a class="<%= currentUrl === 'admin/userList' ? ' active' : '' %>" href="/admin/userList">User list</a>
+                    <!-- <a href="page-account-register.html">Add new user</a> -->
+                    
+                </div>
+            </li>
+            <li  class="<%= currentUrl === '/productList'|| currentUrl === '/category'|| currentUrl === '/brand' ? 'menu-item has-submenu active' : 'menu-item has-submenu'  %>">
+                <a class="menu-link" href="page-products-list.html"> <i class="icon material-icons md-shopping_bag"></i>
+                    <span class="text">Products</span>
+                </a>
+                <div class="submenu">
+                    <a class="<%= currentUrl === '/productList' ? ' active' : '' %>"href="/admin/productList">Product List</a>
+                  
+                    <a class="<%= currentUrl === '/category' ? ' active' : '' %>"href="/admin/category">Categories</a>
+                    <a class="<%= currentUrl === '/brand' ? ' active' : '' %>"href="/admin/brand">Brands</a>
+                </div>
+            </li>
+           
+           
+            <li class="<%=   currentUrl === '/addProducts' ? 'menu-item active' : 'menu-item'  %>">
+                <a class="menu-link" href="/admin/addProducts"> <i class="icon material-icons md-add_box"></i>
+                    <span class="text">Add product</span>
+                </a>
+                
+            </li>
+            <li class="<%= currentUrl === '/orderList'? 'menu-item has-submenu active' : 'menu-item has-submenu'  %>">
+                <a class="menu-link" href="page-orders-1.html"> <i class="icon material-icons md-shopping_cart"></i>
+                    <span class="text">Orders</span>
+                </a>
+                <div class="submenu">
+                    <a class="<%= currentUrl === '/orderList' ? ' active' : '' %>"href="/admin/orderList"href="/admin/orderList">Order list </a>
+                    
+                    
+                </div>
+               
+            </li>
+             
+            <li  class="<%=   currentUrl === '/coupon' ? 'menu-item active' : 'menu-item'  %>">
+                <a class="menu-link" href="/admin/coupon"> <i class="icon material-icons md-add_box"></i>
+                    <span class="text">Coupon</span>
+                </a>
+                
+            </li>
+            <li class="<%=   currentUrl === '/offer' ? 'menu-item active' : 'menu-item'  %>">
+                <a class="menu-link" href="/admin/offer"> <i class="icon material-icons md-add_box"></i>
+                    <span class="text">Offer</span>
+                </a>
+                
+            </li>
+            
+            <li class="<%=   currentUrl === '/salesReport' ? 'menu-item active' : 'menu-item'  %>">
+                <a class="menu-link" href="/admin/salesReport"> <i class="icon material-icons md-add_box"></i>
+                    <span class="text">Sales Report</span>
+                </a>
+                
+            </li>
+            <!-- <li class="menu-item">
+                <a class="menu-link" href="page-reviews.html"> <i class="icon material-icons md-comment"></i>
+                    <span class="text">Reviews</span>
+                </a>
+            </li> -->
+            <!-- <li class="menu-item">
+                <a class="menu-link" href="page-brands.html"> <i class="icon material-icons md-stars"></i>
+                    <span class="text">Brands</span> </a>
+            </li> -->
+            
+        </ul>
+        <hr>
+        <!-- <ul class="menu-aside">
+            <li class="menu-item has-submenu">
+                <a class="menu-link" href="#"> <i class="icon material-icons md-settings"></i>
+                    <span class="text">Settings</span>
+                </a>
+                <div class="submenu">
+                    <a href="page-settings-1.html">Setting sample 1</a>
+                    <a href="page-settings-2.html">Setting sample 2</a>
+                </div>
+            </li>
+            
+        </ul> -->
+        <br>
+        <br>
+    </nav>
+</aside>

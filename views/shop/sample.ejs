@@ -1,0 +1,71 @@
+applyCoupon: async (req, res) => {
+    try {
+      const user = req.session.user;
+      const { total, couponCode } = req.body;
+      const response = await userHelper.applyCoupon(user._id, couponCode);
+      res.json(response);
+    } catch (error) {}
+  },
+
+
+
+  applyCoupon: (userId, couponCode, total) => {
+    return new Promise(async (resolve, reject) => {
+      let coupon = await Coupon.findOne({ code: couponCode });
+      if (coupon && coupon.isActive == 'Active') {
+        if (!coupon.usedBy.includes(userId)) {
+          let cart = await Cart.findOne({ user: userId })
+          const discount = coupon.discount
+          cart.total = cart.total - coupon.discount;
+         
+          cart.coupon = couponCode;
+          coupon.usedBy.push(userId);
+          await coupon.save()
+          resolve({ discount, cart,total, status: true, message: "coupn added successfully" })
+        } else {
+          resolve({ status: false, message: "Coupon code already used" })
+        }
+      } else {
+        resolve({ status: false, message: "invalid Coupon code" })
+      }
+    })
+  },
+
+
+
+  function applyCoupon(total) {
+    const couponCode = document.getElementById('couponCode').value;
+    console.log(couponCode);
+
+    $.ajax({
+        url: '/apply-coupon',
+        type: 'post',
+        data: {
+            couponCode: couponCode,
+            total: total
+        }
+    })
+    .done((res) => {
+        // Prevent page reload
+        event.preventDefault();
+        
+
+        if (res.status) {
+            console.log("hello");
+            console.log(res);
+            document.getElementById('couponApplyFail').classList.add('d-none');
+            document.getElementById('couponApplySuccess').classList.remove('d-none');
+            document.getElementById('couponApplySuccess').innerHTML = res.message;
+            document.getElementById('discount').innerHTML = res.discount.toFixed(2);
+            document.getElementById('totalAmount').innerHTML = (total - res.discount).toFixed(2);;
+            
+
+        } else {
+            console.log(res);
+            document.getElementById('couponApplySuccess').classList.add('d-none');
+            document.getElementById('couponApplyFail').classList.remove('d-none');
+            document.getElementById('couponApplyFail').innerHTML = res.message;
+        }
+    });
+}
+

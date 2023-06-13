@@ -1,0 +1,87 @@
+
+<%- include('../partials/header') %>
+
+    <!-- Categories Section Begin -->
+<%- include('components/banners/topBanners') %>   
+<!-- Categories Section End -->
+
+<!-- Product Section Begin -->
+<%- include('components/products/newProducts') %>
+<!-- Product Section End -->
+
+<!-- Banner Section Begin -->
+<%- include('components/banners/bannerSection') %>
+<!-- Banner Section End -->
+
+<!-- Trend Section Begin -->
+<section class="trend spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <%- include('components/products/popularProducts') %>                
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <%- include('components/products/topratedProducts') %>  
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <%- include('components/products/featuredProducts') %>  
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Trend Section End -->
+
+<!-- Discount Section Begin -->
+<%- include('components/banners/bottomBanner') %>  
+<!-- Discount Section End -->
+
+<!-- Services Section Begin -->
+<section class="services spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="services__item">
+                    <i class="fa fa-car"></i>
+                    <h6>Free Shipping</h6>
+                    <p>For all oder over $99</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="services__item">
+                    <i class="fa fa-money"></i>
+                    <h6>Money Back Guarantee</h6>
+                    <p>If good have Problems</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="services__item">
+                    <i class="fa fa-support"></i>
+                    <h6>Online Support 24/7</h6>
+                    <p>Dedicated support</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="services__item">
+                    <i class="fa fa-headphones"></i>
+                    <h6>Payment Secure</h6>
+                    <p>100% secure payment</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Services Section End -->
+
+
+
+<!-- Search Begin -->
+<div class="search-model">
+    <div class="h-100 d-flex align-items-center justify-content-center">
+        <div class="search-close-switch">+</div>
+        <form class="search-model-form">
+            <input type="text" id="search-input" placeholder="Search here.....">
+        </form>
+    </div>
+</div>
+<!-- Search End -->
+<%- include('../partials/footer') %>

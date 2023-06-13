@@ -1,0 +1,66 @@
+<%- include('../partials/admin-header') %>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Order List </h2>
+            
+        </div>
+        
+    </div>
+    <div class="card mb-4">
+        
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="order-list">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Date</th>
+                            <th scope="col" class="text-end"> Action </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% count=1 %>
+                        <% for (let i = 0; i < Orders.length; i++) { %>
+                            <tr>
+                                <td><%= count %></td>
+                              <td><%= Orders[i]._id %></td>
+                              <td><b><%= Orders[i].user[0].name %></b></td>
+                              <td><%= Orders[i].paymentMethod %></td>
+                              <td>Rs.<%= Orders[i].totalAmount %></td>
+                              
+                              <td>
+                                    <span class="badge rounded-pill alert-primary"><%= Orders[i].orderStatus %></span>
+                                  
+                                </td>
+                                
+                              <td><%= Orders[i].orderDate.toISOString().split('T')[0] %></td>
+                              <td class="text-end">
+                                <a href="/admin/orderDetails/<%= Orders[i]._id %>" class="btn btn-md rounded font-sm">Detail</a>
+                                <div class="dropdown">
+                                  <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
+                                    <i class="material-icons md-more_horiz"></i>
+                                  </a>
+                                  <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#">Edit info</a>
+
+                                  </div>
+                                </div> <!-- dropdown //end -->
+                              </td>
+                            </tr>
+                            <% count++ %>
+                          <% } %>
+                   
+                    </tbody>
+                </table>
+            </div> <!-- table-responsive //end -->
+        </div> <!-- card-body end// -->
+    </div> <!-- card end// -->
+ 
+</section> <!-- content-main end// -->
+<%- include('../partials/admin-footer') %>

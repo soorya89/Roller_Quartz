@@ -1,0 +1,237 @@
+
+<%- include('../partials/header') %>
+
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="/"><i class="fa fa-home"></i> Home</a>
+                    <span>Shopping cart</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Shop Cart Section Begin -->
+<section class="shop-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shop__cart__table">
+                 
+                                             
+                                            
+                        <% if (cart.products != '') { %>
+
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                             
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                            <% products.forEach(product=>{ %>
+                                <tr>
+                                    <td >
+                                        <% product.productId.productImage[0].forEach(image=> { %>
+                                          <div class="tumb-cart-img" style="background-image: url('/uploads/<%= product.productId.productImage[0] %>');"></div>  
+                                            <% }) %>
+                                    <td>
+                                        <div class="cart__product__item__title">
+                                            <h6>
+                                                <%= product.productId.productName%>
+                                            </h6>
+
+                                        </div>
+                                    </td>
+                                    </td>
+                                    <td class="cart__price">
+                                        &#x20B9;    <%= product.productId.productPrice %>
+                                        
+                                    </td>
+                                    <td class="cart__quantity">
+                               
+                                        <button style="border: none;border-radius:3px; padding:0 16px 0 16px"
+                                            onclick="changeQuantity('<%=cart._id%>','<%=product.productId._id%>',-1)">-</button>
+                                        <span id="<%=product.productId._id%>">
+                                            <%= product.quantity %>
+                                        </span>
+                                        <button style="border: none;border-radius:3px; padding:0 16px 0 16px"
+                                            class=""
+                                            onclick="changeQuantity('<%= cart._id%>','<%=product.productId._id%>',1)">+</button>
+                                    </td>
+                                    <td class="cart__total">
+                                        <span id="<%= product.productId._id %>" data-product-id="<%= product.productId._id %>" data-field="promotional-price" data-promotional-price="<%= product.productId.productPrice %>">
+                                            &#x20B9; <%= product.productId.productPrice*product.quantity%>
+                                          </span>
+                                    </td>
+
+                                    <td class="cart__close" onclick="productRemove('<%= product.productId._id %>')">
+                                        <span class="icon_close"></span></td>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                    <% }else{ %>
+                       
+                        <div class="text-center"><img style=" display: block;
+                            margin-left: auto;
+                            margin-right: auto;
+                            width: 50%;" ><h4> Cart is empty</h4></div>
+                       
+                  <% } %>
+                  
+                </div>
+
+            </div>
+        </div>
+        
+       
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="cart__btn">
+                        <a href="/product">Continue Shopping</a>
+                    </div>
+                </div>
+                <% if (products.length>0) { %>
+                <div class="col-lg-4 ml-auto">
+                    <div class="cart__total__procced">
+                        <h6>Cart total</h6>
+                        <ul>
+            
+                            <li>Total <span id="total">&#x20B9;<%=total%></span></li>
+                        </ul>
+    
+                        <a href="/checkOut" class="primary-btn" >Proceed to checkout</a>
+                    </div>
+                </div>
+                <% }  %>
+            </div>
+            
+        
+    </div>
+</section>
+<!-- Shop Cart Section End -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function changeQuantity(cartId,proId,count){
+        let quantity=parseInt(document.getElementById(proId).innerHTML)
+        count=parseInt(count)
+        $.ajax({
+            url:'/changeQuantity',
+            data: {
+                cart:cartId,
+                product:proId,
+                count:count,
+                quantity:quantity
+
+            },
+            method:'post',
+            success:(response)=>{
+                if(response.response.remove){
+                    Swal.fire({
+          icon: 'warning',
+          title: 'Product removed',
+          text: 'Product removed from cart',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload();
+          }
+        });
+                }else{
+                    quantity += count;
+                    console.log(response.total);
+                   document.getElementById(proId).innerHTML=quantity
+                   updatePromotionalPrice(proId, quantity,response.total);
+                }
+              
+            }
+        })
+    }
+    function updatePromotionalPrice(proId, quantity,total) {
+    const promotionalPriceElement = document.querySelector(`span[data-product-id="${proId}"][data-field="promotional-price"]`);
+    if (promotionalPriceElement) {
+      const productPromotionalPrice = parseFloat(promotionalPriceElement.dataset.promotionalPrice);
+      const updatedPromotionalPrice = productPromotionalPrice * quantity;
+      promotionalPriceElement.textContent = updatedPromotionalPrice.toFixed(2);
+      document.getElementById('total').innerHTML =total
+    }
+  }
+</script>
+<script>
+	function productRemove(productId,cartId) {
+		console.log(cartId);
+		swal("Do you want to remove this item from cart?", {
+			buttons: ["No", "yes"],
+		}).then((res) => {
+			if (res) {
+				$.ajax({
+					url: '/deleteCartProduct',
+					data:{
+						productId:productId
+					},
+					type: 'post',
+				})
+				.done((res) => {
+					swal("Successful",`${res.message}`,"success").then(()=>{
+						location.reload()
+					})
+					console.log(`${res.message}`)
+					
+				})
+				.fail((error) => {
+					console.log(error);
+				})	
+			}
+		})
+
+	}
+</script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<%- include('../partials/footer') %>
+<script>
+function applyCoupon(total){
+    const couponCode=document.getElementById('couponCode').value;
+    console.log(couponCode);
+
+    $.ajax({
+        url:'/apply-coupon',
+        type:'post',
+        data:{
+            couponCode:couponCode,
+        }
+    })
+    .done((res)=>{
+        if(res.status){
+            console.log("hello");
+            console.log(res);
+            document.getElementById('couponApplyFail').classList.add('d-none')
+            document.getElementById('couponApplySuccess').classList.remove('d-none')
+            document.getElementById('couponApplySuccess').innerHTML=res.message
+            document.getElementById('discount').innerHTML=-res.discount
+            document.getElementById('totalAmount').innerHTML=res.cart.totalAmount
+        }else{
+            console.log(res);
+            document.getElementById('couponApplySuccess').classList.add('d-none')
+            document.getElementById('couponApplyFail').classList.remove('d-none')
+            document.getElementById('couponApplyFail').innerHTML=res.message
+
+
+        }
+    })
+}
+
+</script>

@@ -1,0 +1,263 @@
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    >
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- 
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script> -->
+
+
+</head>
+<%- include('../partials/admin-header') %>
+<!-- <style>
+   
+    .toast-error {
+  background-color: red;
+  color: white;
+}
+
+
+
+
+    #toastr-container>.toast-success {
+        opacity: 0.9;
+        /* Adjust the opacity value as desired */
+        color: green;
+        /* Set the text color to green */
+
+    }
+</style> -->
+<div id="toastr-container"></div>
+
+
+
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Offer Management </h2>
+              
+                <!-- <% if (locals.existing) { %>
+                    <p style="color: red;">can't delete ,using in an existing product</p>
+                    <% } else { %>
+                        <p style="color: red;">Category deleted......</p>
+                    <% } %>
+                     -->
+                  
+            </div>
+            <div>
+                <input type="text" placeholder="Search Categories" class="form-control bg-white">
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <form action="/admin/addOffer" method='post' >
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Name</label>
+                                <input type="text" placeholder="Type here" class="form-control" name="name"
+                                    id="name" />
+                            </div>
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Discount</label>
+                                <input type="text" placeholder="Type here" class="form-control" name="discount"
+                                    id="discount" />
+                            </div>
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Category</label>
+                                <select class="form-select"name="categoryname">
+                                    <option> Select category  </option>
+                                    <% viewCategory.forEach(function(category) { %>
+                                        <option value="<%= category._id %>"><%= category.CategoryName %></option>
+                                        <% }); %>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">End date</label>
+                                <input type="date" placeholder="Type here" class="form-control" name="endDate"
+                                    id="end_date" />
+                            </div>
+
+                            <div class="d-grid">
+                                <button class="btn btn-primary" type="submit">Create offer</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                      
+                                        <th>No</th>
+                                        <th>Name</th>
+                                        <th>Discount</th>
+                                        <th>Category</th>
+                                        <th>expiryDate</th>
+                                        
+
+
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                   
+                                                <% for( let i=0; i < offers.length; i++ ) { %>
+                                                    <tr class="text-left">
+                                                        <td width="15%">
+                                                            <%= i+1 %>
+                                                        </td>
+                                                        <td width="20%">
+                                                            <%= offers[i].title %>
+                                                        </td>
+                                                        <td width="20%">
+                                                            <%= offers[i].categoryDetails[0].CategoryName%>
+                                                        </td>
+                                                        <td width="10%">
+                                                            <%= offers[i].discount %>
+                                                        </td>
+                                                        <td width="15%">
+                                                            <%= offers[i].endDate.toISOString().split('T')[0] %>
+                                                        </td>
+
+
+                                                <td class="text-end">
+                                                    <div class="dropdown">
+                                                       <% if (offers[i].status) { %>
+                                                        <button onclick="deActiveOffer('<%= offers[i]._id %>')"
+                                                            class="btn btn-sm btn-success rounded font-sm mt-15"
+                                                            >deActive</button>
+                                                       
+                                                       <% } else { %>
+                                                        <button onclick="activeOffer('<%= offers[i]._id %>')"
+                                                            class="btn btn-sm btn-danger rounded font-sm mt-15"
+                                                            >Active</button>
+                                                       
+                                                            <% } %>
+                                                            <button onclick="deleteOffer('<%= offers[i]._id %>')"
+                                                                class="btn btn-sm btn-brand rounded font-sm mt-15"
+                                                                >Delete</button> 
+
+                                                    </div> <!-- dropdown //end -->
+                                                </td>
+                                                <% } %>
+                                            </tr>
+                                            
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- .col// -->
+                </div> <!-- .row // -->
+            </div> <!-- card body .// -->
+        </div> <!-- card .// -->
+    </section>
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+       
+     function deleteOffer(offerId) {
+        console.log("clicked", offerId);
+        swal('are you sure you want to delete this offer', {
+            buttons: ["no", "yes"]
+        }).then((res) => {
+            if (res) {
+                $.ajax({
+                    url: "/admin/deleteOffer/" + offerId,
+                    type: 'get',
+                })
+                    .done((res) => {
+                        if (res) {
+                            swal("Successful", `${res.message}`, "success").then(() => {
+                                location.reload()
+                            }).then(()=>{
+
+                                location.href = '/admin/offer'
+                            })
+                        }
+                    })
+                    .fail((error) => {
+                        console.log(error);
+                    })
+            }
+        })
+
+
+    }
+
+    function activeOffer(offerId) {
+        console.log("clicked", offerId);
+        swal('are you sure you want to apply this offer', {
+            buttons: ["no", "yes"]
+        }).then((res) => {
+            if (res) {
+                $.ajax({
+                    url: "/admin/activeOffer/" + offerId,
+                    type: 'put',
+                })
+                    .done((res) => {
+                        if (res) {
+                            swal("Successful", `${res.message}`, "success").then(() => {
+                                location.reload()
+                            }).then(()=>{
+
+                                location.href = '/admin/offer'
+                            })
+                        }
+                    })
+                    .fail((error) => {
+                        console.log(error);
+                    })
+            }
+        })
+
+
+    }
+    function deActiveOffer(offerId) {
+        console.log("clicd", offerId);
+        swal('are you sure you want to apply this offer', {
+            buttons: ["no", "yes"]
+        }).then((res) => {
+            if (res) {
+                $.ajax({
+                    url: "/admin/deActiveOffer/" + offerId,
+                    type: 'put',
+                })
+                    .done((res) => {
+                        console.log("1kjhoilgul");
+                        if (res) {
+                            swal("Successful", `${res.message}`, "success").then(() => {
+                                location.reload()
+                            }).then(()=>{
+
+                                location.href = '/admin/offer'
+                            })
+                        }
+                    })
+                    .fail((error) => {
+                        console.log(error);
+                    })
+            }
+        })
+
+
+    }
+
+
+       
+
+    </script>
+   
+    <%- include('../partials/admin-footer') %>

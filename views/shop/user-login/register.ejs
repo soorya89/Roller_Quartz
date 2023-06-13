@@ -1,0 +1,230 @@
+<%- include('../../partials/header') %>
+<style>
+  @media only screen and (max-width: 820px) {
+    .login-grid {
+      margin: 0 auto;
+      background-color: #000;
+    }
+    .login-grid > div:first-child {
+      display: none;
+    }
+    .link-color {
+      color: white;
+    }
+  }
+  @media only screen and (min-width: 821px) {
+    .login-grid > div:last-child {
+      background-color: white;
+    }
+    .login-grid > div:first-child {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 0;
+    }
+    .login-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background-color: #ddd;
+      width: 73%;
+      margin: 40px auto auto;
+    }
+    .link-color {
+      color: black;
+    }
+  }
+
+  body {
+    background-color: black;
+  }
+
+  .login-grid img {
+    width: 40%;
+  }
+  .loginWrap {
+    padding: 30px;
+  }
+</style>
+<form action="/register" method="post" class="pb-3" id="signup-form">
+  <div class="login-grid">
+    <div><img src="/images/register-image.png" /></div>
+    <div class="loginWrap">
+      <h3 style="font-weight: 500" class="mb-3 link-color">Register</h3>
+      <div>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Name"
+          class="form-control form-control-lg"
+        />
+        <span
+          class="text-danger d-none"
+          style="font-size: 12px; margin-left: 10px"
+          id="nameError"
+        ></span>
+      </div>
+      <div class="mt-3">
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          placeholder="Phone"
+          class="form-control form-control-lg"
+        />
+        <span
+          class="text-danger d-none"
+          style="font-size: 12px; margin-left: 10px"
+          id="phoneError"
+        ></span>
+      </div>
+      <div class="mt-3">
+        <input
+          type="email"
+          id="email"
+          placeholder="Email"
+          name="email"
+          class="form-control form-control-lg"
+        />
+        <span
+          class="text-danger d-none"
+          style="font-size: 12px; margin-left: 10px"
+          id="emailError"
+        ></span>
+      </div>
+      <div class="mt-3">
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-control form-control-lg"
+          placeholder="Password"
+        />
+        <span
+          class="text-danger d-none"
+          style="font-size: 12px; margin-left: 10px"
+          id="passwordError"
+        ></span>
+      </div>
+      <div class="mt-3">
+        <input
+          type="password"
+          id="password2"
+          name="password2"
+          class="form-control form-control-lg"
+          placeholder="Confirm Password"
+        />
+        <span
+          class="text-danger d-none"
+          style="font-size: 12px; margin-left: 10px"
+          id="password2Error"
+        ></span>
+      </div>
+      <div class="d-flex justify-content-between mt-3">
+        <div class="link-color">
+          You already have an account?<a
+            href="/login"
+            class="btn btn-link link-color"
+            style="font-weight: bold"
+            >Login</a
+          >
+        </div>
+        <div>
+          <a href="/login">
+            <button type="submit" id="register" class="btn btn-dark">
+              SIGNUP
+            </button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<script>
+  //regiser validation
+
+  const loginForm = document.getElementById("signup-form");
+
+  const userName = document.getElementById("name");
+  const email = document.getElementById("email");
+  const mobile = document.getElementById("phone");
+  const password = document.getElementById("password");
+  const password2 = document.getElementById("password2");
+
+  const usernameRegex = /^[a-zA-Z0-9_]+$/;
+  const emailRegX = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+  const mobileRegex = /^\d{10}$/;
+  const passRegX = /^[a-zA-Z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]{4,}$/;
+
+  loginForm.addEventListener("submit", (e) => {
+    if (userName.value === "" || userName.value === null) {
+      e.preventDefault();
+      document.getElementById("nameError").classList.remove("d-none");
+      document.getElementById("nameError").innerHTML =
+        "Name must be filled!----";
+    } else if (!userName.value.match(usernameRegex)) {
+      e.preventDefault();
+      document.getElementById("nameError").classList.remove("d-none");
+      document.getElementById("nameError").innerHTML = "invalid name";
+    } else if (userName.value.match(usernameRegex)) {
+      document.getElementById("nameError").innerHTML = "";
+      document.getElementById("nameError").classList.add("d-none");
+    }
+
+    if (email.value === "" || email.value === null) {
+      e.preventDefault();
+      document.getElementById("emailError").classList.remove("d-node");
+      document.getElementById("emailError").innerHTML = "Email must be filled!";
+    } else if (!email.value.match(emailRegX)) {
+      e.preventDefault();
+      document.getElementById("emailError").classList.remove("d-none");
+      document.getElementById("emailError").innerHTML = "Invalid Email Address";
+    } else if (email.value.match(emailRegX)) {
+      document.getElementById("emailError").classList.remove("d-none");
+      document.getElementById("emailError").innerHTML = "";
+    }
+
+    if (mobile.value === "" || mobile.value === null) {
+      e.preventDefault();
+      document.getElementById("phoneError").classList.remove("d-none");
+      document.getElementById("phoneError").innerHTML =
+        "Phone number must be filled!";
+    } else if (!mobile.value.match(mobileRegex)) {
+      e.preventDefault();
+      document.getElementById("phoneError").classList.remove("d-none");
+      document.getElementById("phoneError").innerHTML = "Invalid Phone Number";
+    } else if (mobile.value.match(mobileRegex)) {
+      document.getElementById("phoneError").classList.remove("d-none");
+      document.getElementById("phoneError").innerHTML = "";
+    }
+
+    if (password.value === "" || password.value === null) {
+      e.preventDefault();
+      document.getElementById("passwordError").classList.remove("d-none");
+      document.getElementById("passwordError").innerHTML =
+        "password number must be filled!";
+    } else if (!password.value.match(passRegX)) {
+      e.preventDefault();
+      document.getElementById("passwordError").classList.remove("d-none");
+      document.getElementById("passwordError").innerHTML =
+        "Password must contain at least 6 characters including one uppercase letter,<br> one lowercase letter, one number and one special character.";
+    } else if (password.value.match(passRegX)) {
+      document.getElementById("passwordError").classList.remove("d-none");
+      document.getElementById("passwordError").innerHTML = "";
+    }
+    if (password2.value === "" || password2.value === null) {
+      e.preventDefault();
+      document.getElementById("password2Error").classList.remove("d-none");
+      document.getElementById("password2Error").innerHTML =
+        "password number must be filled!";
+    } else if (!password.value.match(passRegX)) {
+      e.preventDefault();
+      document.getElementById("password2Error").classList.remove("d-none");
+      document.getElementById("password2Error").innerHTML =
+        "Password must contain at least 6 characters including one uppercase letter,<br> one lowercase letter, one number and one special character.";
+    } else if (password.value.match(passRegX)) {
+      document.getElementById("password2Error").classList.remove("d-none");
+      document.getElementById("password2Error").innerHTML = "";
+    }
+  });
+</script>

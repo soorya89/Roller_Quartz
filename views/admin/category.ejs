@@ -1,0 +1,232 @@
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    >
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- 
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script> -->
+
+
+</head>
+<%- include('../partials/admin-header') %>
+<style>
+   
+    .toast-error {
+  background-color: red;
+  color: white;
+}
+
+
+
+
+    #toastr-container>.toast-success {
+        opacity: 0.9;
+        /* Adjust the opacity value as desired */
+        color: green;
+        /* Set the text color to green */
+
+    }
+</style>
+<div id="toastr-container"></div>
+
+
+
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Category Management </h2>
+              
+                <div id="messageContainer">
+                    <% if (locals.existing) { %>
+                      <p style="color: red;">can't delete, using in an existing product</p>
+                    <% } else { %>
+                      <p style="color: red;">Category deleted...</p>
+                    <% } %>
+                  </div>
+                  
+                    
+                  
+            </div>
+            <div>
+                <input type="text" placeholder="Search Categories" class="form-control bg-white">
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <form action="/admin/createcategory" method='post' id="createCategoryForm">
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Name</label>
+                                <input type="text" placeholder="Type here" class="form-control" name="CategoryName"
+                                    id="product_name" />
+                            </div>
+
+
+                            <div class="d-grid">
+                                <button class="btn btn-primary" type="submit">Create category</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+
+                                        <th>Name</th>
+                                        <th></th>
+
+
+
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% count=1 %>
+                                        <% viewCategory.forEach(function(category){%>
+                                            <tr>
+
+                                                <td>
+                                                    <%= count %>
+                                                </td>
+
+                                                <td><b>
+                                                        <%= category.CategoryName %>
+                                                    </b></td>
+                                              
+
+
+                                                <td class="text-end">
+                                                    <div class="dropdown">
+                                                        <!-- <button data-categoryid="<%= category._id %>"
+                                                            class="btn btn-sm btn-brand rounded font-sm mt-15"
+                                                            onclick="deleteCategory('<%= category._id%>')">Delete</button> -->
+                                                            <a href="/admin/deleteCategory/<%= category._id%>"
+                                                                class="btn btn-sm btn-brand rounded font-sm mt-15"
+                                                                >Delete</a> 
+
+                                                    </div> <!-- dropdown //end -->
+                                                </td>
+                                            </tr>
+                                            <% count++ %>
+                                                <%} )%>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- .col// -->
+                </div> <!-- .row // -->
+            </div> <!-- card body .// -->
+        </div> <!-- card .// -->
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+       
+          window.addEventListener('DOMContentLoaded', function() {
+    var messageContainer = document.getElementById('messageContainer');
+    
+    if (messageContainer) {
+      setTimeout(function() {
+        messageContainer.parentNode.removeChild(messageContainer);
+      }, 2000); 
+    }
+  });
+
+
+
+        function deleteCategory(categoryId) {
+            console.log(categoryId);
+            const url2 = `/admin/deleteCategory/${categoryId}`;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ok'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+
+                    try {
+                        const response = await fetch(url2, {
+                            method: "put",
+                            headers: {
+                                "Content-Type": "application/json"
+                            }
+                        });
+                        console.log(response);
+                        Swal.fire(
+                            'Deleted!',
+                            'Category has been Deleted.',
+                            'success'
+                        ).then(res => {
+                            window.location.reload()
+                        })
+
+
+                    } catch (error) {
+                        console.error(`${error.message}`);
+                    }
+
+
+                }
+            })
+        }
+
+       
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Submit the create category form using AJAX
+            $("#createCategoryForm").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Get the form data
+                var formData = $(this).serialize();
+
+                // Send the AJAX request
+                $.ajax({
+                    url: '/admin/createcategory',
+                    type: 'POST',
+                    data: formData,
+                    success: function (result) {
+                        if (result.success) {
+                            toastr.success(result.message,'', { "toastClass": "toast-success","timeOut": 5000  });
+                            // Clear the form input
+                            $("#product_name").val('');
+                            window.location.reload();
+                        } else {
+                            toastr.error(result.message,'', { "toastClass": "toast-error" });
+                         
+                        }
+                    },
+                    
+                    error: function () {
+                        toastr.error('failed to add category',{ "toastClass": "toast-error" });
+                       
+                    }
+                    
+                });
+            });
+        });
+
+    </script>
+
+    <%- include('../partials/admin-footer') %>
