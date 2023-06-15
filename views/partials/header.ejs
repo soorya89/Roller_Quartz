@@ -92,12 +92,11 @@
                                 <% } else { %>
                                     <li><a href="/"><span class="icon_bag_alt"></span>
                                         <% } %>
-                                <% if (locals.cartCount) { %>
-                                    <div class="tip"><%= cartCount%></div>
-                                    <% } else { %>
-                                        <div></div>
-                                <% } %>
-
+                                        <% if (locals.cartCount && locals.cartCount.count) { %>
+                                            <div class="tip"><%= locals.cartCount.count %></div>
+                                          <% } else { %>
+                                            <div></div>
+                                          <% } %>
 
                             </a></li>
                             <div class="header__right__auth">

@@ -19,6 +19,7 @@ const walletHelper = require("../helpers/walletHelper");
 const razorpay = require("../config/razorpay");
 const  response  = require("../routes/userRouter");
 const ObjectId = require("mongoose").Types.ObjectId;
+const bannerData = require('../model/banner')
 
 dotenv.config();
 
@@ -78,6 +79,8 @@ module.exports = {
           isActive: true,
         });
         await newUser.save();
+        req.session.login = true;
+        req.session.user = user;
         res.redirect("/");
       } else {
         res.redirect("/login");
@@ -183,10 +186,12 @@ module.exports = {
       const user = req.session.user;
       let userId = req.session.user._id;
       let cartCount = await userHelper.getCartCount(userId);
-      wishListCount = await wishlisthelper.getWishListCount(userId);      
-      console.log(wishListCount);
-      const data = { user, req: req, currentUrl: req.url ,wishListCount,cartCount};
-    
+      wishListCount = await wishlisthelper.getWishListCount(userId); 
+      const product = await Product.find({ productStatus: { $eq: true } }).sort({ createdAt: 1 })
+      const bannerList= await bannerData.find({})
+      console.log(bannerList)
+      const data = { user,product, req: req, currentUrl: req.url ,wishListCount,cartCount,bannerList};
+      
       res.render("shop/home", data);
     } catch (error) {
       console.log(error);
@@ -194,7 +199,11 @@ module.exports = {
   },
   landingpage: async (req, res, next) => {
     try {
-      res.render("shop/home",{currentUrl: req.url});
+      const product = await Product.find({ productStatus: { $eq: true } }).sort({ createdAt: 1 })
+      const bannerList= await bannerData.find({})
+      console.log(bannerList.image)
+      const data={currentUrl: req.url,product,bannerList}
+      res.render("shop/home",data)
     } catch (error) {
       console.error(err);
     }
@@ -214,7 +223,7 @@ module.exports = {
         cartCount = await userHelper.getCartCount(userId);
       }
       if (!req.query.filterData) {
-        const count = parseInt(req.query.count) || 3;
+        const count = parseInt(req.query.count) || 6;
         const page = parseInt(req.query.page) || 1;
         const totalCount = await Product.countDocuments();
         const startIndex = (page - 1) * count;
@@ -307,10 +316,11 @@ module.exports = {
       const user = req.session.user;
       let userId = req.session.user._id;
       const address = await Address.find({ user: userId });
+      let coupon=await Coupon.findOne({user:userId})
       let cartCount = await userHelper.getCartCount(userId);
       wishListCount = await wishlisthelper.getWishListCount(userId);
       const orders = await userHelper.getAllOrderDetailsOfAUser(userId);
-      const data=  { user, orders, address,cartCount,wishListCount ,req: req, currentUrl: req.url}
+      const data=  { user, orders, address,coupon,cartCount,wishListCount ,req: req, currentUrl: req.url}
       res.render("shop/userProfiles/myProfile",data);
     } catch (error) {}
   },
@@ -338,12 +348,11 @@ module.exports = {
       const products = cart.products;
       let total = await userHelper.getCartTotal(user);
       let coupon=await Coupon.find()
-      const wallet=await walletSchema.findOne({user:userId})
-      console.log(wallet.walletBalance,'111111111111');     
+      const wallet=await walletSchema.findOne({user:userId})    
       const data = { user,coupon, total,wallet,Addresses, cart, products,req: req, currentUrl: req.url };
       res.render("shop/checkOut", data);
     } catch (error) {
-      console.log(error);
+      res.status(500).render('error', { error });
     }
   },
 
@@ -359,25 +368,42 @@ module.exports = {
       const data = { user, req: req, currentUrl: req.url,product,brand, cart, };
       res.render("shop/components/products/productDetails", data);
     } catch (error) {
-      console.log(error);
+      res.status(500).render('error', { error });
     }
   },
 
   shopCartPage: async (req, res) => {
     try {
       const user = req.session.user;
+      const message = req.session.message;
+      const data = {
+        user,
+        message,
+        req: req,
+        currentUrl: req.url,
+      };
       const cart = await Cart.findOne({ user: user._id }).populate(
         "products.productId"
       );
       if (!cart) {
-        res.render("shop/emptyCart", { user });
+        res.render("shop/emptyCart", data);
         return;
       } else {
         const products = cart.products;
+        const message = req.session.message;
         const countCart = products.length;
         let total = await userHelper.getCartTotal(user);
-        const data={ user, products, countCart, cart, total, req: req, currentUrl: req.url }
-        res.render("shop/shopCart",data );
+        const data = {
+          user,
+          products,
+          countCart,
+          message,
+          cart,
+          total,
+          req: req,
+          currentUrl: req.url,
+        };
+        res.render("shop/shopCart", data);
       }
     } catch (error) {
       console.error(error);
@@ -395,7 +421,9 @@ module.exports = {
       userHelper.addToCart(userId, req.body).then((response) => {
         res.json(response);
       });
-    } catch (error) {}
+    } catch (error) {
+      res.status(500).render('error', { error });
+    }
   },
   changeQuantity: async (req, res, next) => {
     let userid = req.session.user;
@@ -408,7 +436,6 @@ module.exports = {
   deleteCartProduct: async (req, res) => {
     let { productId } = req.body;
     let userId = req.session.user._id;
-    console.log(userId);
     try {
       const response = await userHelper.deleteProductCart(userId, productId);
       if (response.status) {
@@ -417,7 +444,7 @@ module.exports = {
         res.json({ success: false, message: response.message });
       }
     } catch (error) {
-      console.log(error);
+      res.status(500).render('error', { error });
     }
   },
 
@@ -431,34 +458,30 @@ module.exports = {
           res.redirect("/checkOut");
         });
     } catch (error) {
-      console.log(error);
+      res.status(500).render('error', { error });
     }
   },
 
   editAddress: async (req, res) => {
     try {
-      console.log("controller", req.params.id);
       let address = await userHelper.getAnAddress(req.params.id);
-      console.log("controller", address);
       res.json({ address: address });
     } catch (error) {
-      console.log(error);
+      res.status(500).render('error', { error });
     }
   },
   editAddressPost: async (req, res) => {
     try {
       let addressUpdated = await userHelper.editAnAddress(req.body);
-      console.log(addressUpdated);
       res.json({ message: "address updated" });
     } catch (error) {
-      console.log(error);
+      res.status(500).render('error', { error });
     }
   },
   deleteAddress: async (req, res) => {
     const addressId = req.body.addressId;
     try {
       await Address.findByIdAndUpdate(addressId, { addStatus: false });
-
       res.status(200).json({ message: "Address deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: "Error deleting address" });
@@ -467,9 +490,7 @@ module.exports = {
   addAddressProfile: async (req, res) => {
     try {
       let userId = req.session.user._id;
-
       await userHelper.addAddressProfile(req.body, userId);
-
       res.json({ success: "Address added successfully." });
     } catch (error) {
       console.log(error);
@@ -481,9 +502,12 @@ module.exports = {
 
   placeOrder: async (req, res) => {
     try {
-      let userId = req.session.user._id;
+      let userId = req.session.user._id;      
       const cartItems = await Cart.findOne({ user: userId }).populate(
-        "products.productId"
+        {
+          path: 'products.productId',
+          select: 'productPrice',
+        }
       );
       if (!cartItems.products.length) {
         return res.json({
@@ -499,13 +523,14 @@ module.exports = {
           error: true,
           message: "Please Choose Payment Method",
         });
-      }
+      }      
       const totalAmount = req.body.total;
       let orderId = await userHelper.orderPlacing(
         req.body,
         totalAmount,
         cartItems,
-        userId
+        userId,
+        
       );
       if (req.body.payment_method == "COD") {
         await productHelper.decreaseStock(cartItems);
@@ -554,14 +579,13 @@ module.exports = {
           couponCode,
           total,          
         );
-        console.log("ddd");
-        console.log(response.discount);
         res.json(response);
       }else{
-        console.log("not applicable");
         res.json({ status: false, message: "Minimum amount not met for coupon" }); 
       }      
-    } catch (error) {}
+    } catch (error) {
+      res.status(500).render('error', { error });
+    }
   },
 
   viewOrderDetails: async (req, res) => {
@@ -572,11 +596,13 @@ module.exports = {
         _id: orderId,
         user: req.session.user._id,
       });
+      // let couponDetails=await userHelper.couponDetails(orderId)
       const address = await Address.findOne({ _id: orderdetails.address });
       let productDetails = await userHelper.getOrderedProductsDetails(orderId);
       const data= {
         user,
         orderId,
+        
         address,
         orderdetails,
         productDetails,
@@ -584,23 +610,27 @@ module.exports = {
       }
       res.render("shop/viewOrderDetails",data );
     } catch (error) {
-      console.log(error);
+      res.status(500).render('error', { error });
     }
   },
 
   getMyOrders: async (req, res) => {
-    const user = req.session.user;
-    const order = await Order.findOne({ user: req.session.user._id });
-    let allcategory = await Category.find();
-    let cartCount = await userHelper.getCartCount(req.session.user._id);
-    res.render("shop/userProfiles/myProfile", {
-      user,
-      cartCount,
-      allcategory,
-      order,
-    });
+    try {
+      const user = req.session.user;
+      const order = await Order.findOne({ user: req.session.user._id });
+      let allcategory = await Category.find();
+      let cartCount = await userHelper.getCartCount(req.session.user._id);
+      res.render("shop/userProfiles/myProfile", {
+        user,
+        cartCount,
+        allcategory,
+        order,
+      });
+    } catch (error) {
+      res.status(500).render('error', { error });
+    }
   },
-
+  
   getOrderPlaced: async (req, res) => {
     let orderId = req.params.id;
     const user = req.session.user;
@@ -610,21 +640,6 @@ module.exports = {
     const data= { user, cartCount, allcategory, orderId,req: req, currentUrl: req.url  }
     res.render("shop/orderPlaced",data );
   },
-
-  // cancelOrder: async (req, res) => {
-  //   try {
-  //     let orderId = req.params.id;
-  //     await Order.updateOne(
-  //       { _id: orderId },
-  //       {
-  //         $set: {
-  //           orderStatus: "Cancelled",
-  //         },
-  //       }
-  //     );
-  //     res.json({ status: true });
-  //   } catch (error) {}
-  // },
   cancelOrder:async(req,res)=>{ 
     try {
       let orderId=req.params.id
@@ -646,7 +661,7 @@ module.exports = {
 
          
     } catch (error) {
-        
+      res.status(500).render('error', { error });
     }
  },
 
@@ -668,15 +683,12 @@ module.exports = {
           },
         }
       );
-      console.log(returnResponse);
       if(returnResponse.payment_method!='COD'){
         await walletHelper.addMoneyToWallet(userId,returnResponse.totalAmount);
-        console.log("***************");
       }
-
       res.json({ status: true });
     } catch (error) {
-      console.error(error);
+      res.status(500).render('error', { error });
     }
   },
 
@@ -725,7 +737,7 @@ module.exports = {
   },
   search: async (req, res) => {
     try {
-      const count = parseInt(req.query.count) || 4;
+      const count = parseInt(req.query.count) || 3;
       const page = parseInt(req.query.page) || 1;
       const totalCount = await Product.countDocuments();
       const startIndex = (page - 1) * count;
@@ -766,12 +778,26 @@ module.exports = {
   },
   wishlist: async (req, res) => {
     try {
-      let user=req.session.user
-      let userId = req.session.user._id;
+      const { user } = req.session;
+      const userId = user ? user._id : null;
+      const [wishListCount, cartCount] = await Promise.all([
+        userId ? wishlisthelper.getWishListCount(userId) : null,
+        userId ? userHelper.getCartCount(userId) : null,
+      ]);
+
       let wishList = await wishlisthelper.getAllWishListItems(userId);
       console.log(wishList);
-      const data={ wishList,req: req, currentUrl: req.url,user  }
-      res.render("shop/wishlist",data );
+
+      const data = {
+        wishList,
+        req: req,
+        currentUrl: req.url,
+        user,
+        wishListCount,
+        cartCount,
+      };
+
+      res.render("shop/wishlist", data);
     } catch (error) {
       res.redirect("404");
     }
@@ -784,7 +810,7 @@ module.exports = {
       let response = await wishlisthelper.addItemToWishList(productId, userId);
       res.json(response);
     } catch (error) {
-      console.log(error);
+      res.status(500).render('error', { error });
     }
   },
   
@@ -803,7 +829,9 @@ module.exports = {
       } else {
         res.json({ success: false, message: response.message });
       }
-    } catch (error) {}
+    } catch (error) {
+      res.status(500).render('error', { error });
+    }
   },
 
 

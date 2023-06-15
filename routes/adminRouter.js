@@ -46,5 +46,9 @@ router.post("/addOffer", adminCheck, adminController.addOfferPost);
 router.get('/deleteOffer/:id',adminCheck,adminController.deleteOffer)
 router.put('/activeOffer/:id',adminCheck,adminController.activeOffer)
 router.put('/deActiveOffer/:id',adminCheck,adminController.deActiveOffer)
+router.post('/changeStatus/:id',adminCheck,adminController.getChangeStatus)
+
+router.get('/banner',adminCheck,adminController.getBanner)
+router.post('/addBanner',adminCheck,adminController.addBanner)
 
 module.exports = router;

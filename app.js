@@ -49,7 +49,7 @@ app.use(
     dest: 'uploads',
     storage: storage,
     limits: { fileSize: 1024 * 1024 }, // 1MB
-  }).array('productImage',4)
+  }).array('productImage',5)
 );
 
 app.use(logger('dev'));

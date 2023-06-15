@@ -74,7 +74,16 @@
                                                             <td><%= count %></td>
                                                             <td><%= order._id %></td>
                                                             <td><%= order.orderDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) %></td>
-                                                            <td><%= order.orderStatus %></td>
+                                                            <td><% if(order.orderStatus=='placed' ) {%>
+                                                             <span class="rounded-pill alert-success"><%=order.orderStatus%></span>
+                                                             <% }else if (order.orderStatus=='Cancelled' ) { %>
+                                                                <span class="rounded-pill alert-danger"><%=order.orderStatus%></span>
+                                                                <% }else if (order.orderStatus=='delivered' ) { %>
+                                                                    <span class=" rounded-pill alert-primary"><%=order.orderStatus%></span>
+                                                                    <% }else{ %>
+                                                                        <span class="rounded-pill alert-warning"><%=order.orderStatus%></span>
+                                                                        <% } %>
+                                                                    </td>
                                                             <td>Rs.<%= order.totalAmount %></td>
                                                             <td><a href="/viewOrderDetails/<%= order._id %>" class="btn btn-sm btn-dark d-block">View</a></td>
                                                         </tr>

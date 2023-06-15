@@ -17,15 +17,16 @@ const orderSchema = mongoose.Schema(
         quantity: {
           type: Number
         },
-        orderedPrice:{
-          type: Number,
-        
-        },
+       
       
       },
      
     ],
-  
+    orderedPrice:{
+      type: Array,
+      default:[]
+    
+    },
     address: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Address'
@@ -38,8 +39,9 @@ const orderSchema = mongoose.Schema(
       type: Number,
     },
     coupon:{
-      type: String,
-      default: null
+      type:String,
+      default:null
+    
   },
     // finalAmount:Number,
     paymentMethod: {

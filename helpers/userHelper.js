@@ -118,7 +118,7 @@ module.exports = {
       }
       const quantity = productdetail.productQuantity;
       if (quantity < 1) {
-        return false;
+        return { response: false, error: "Product is out of stock" };
       }
       let added;
       const cartuser = await Cart.findOne({ user: userId });
@@ -353,14 +353,25 @@ module.exports = {
   },
 
   orderPlacing: (order, totalAmount, cartItems, userid) => {
-    console.log("///////////////////", totalAmount);
     return new Promise(async (resolve, reject) => {
       let status = order.payment_method == "COD" ? "placed" : "pending";
       let date = orderDate();
       let userId = userid;
       let paymentMethod = order.payment_method;
       let addressId = order.address_id;
-      let orderedItems = cartItems;
+      let orderedItems = cartItems;     
+      let couponOffer;
+
+      let orderedPrice=[]
+      if (cartItems) {
+        cartItems.products.forEach((product) => {
+          console.log('Product Price:', product.productId.productPrice);
+          orderedPrice.push(product.productId.productPrice)
+        });        
+      }
+      if(order.coupon){
+        couponOffer =  order.coupon;
+      }
       let ordered = new Order({
         user: userId,
         address: addressId,
@@ -368,13 +379,13 @@ module.exports = {
         totalAmount: totalAmount,
         paymentMethod: paymentMethod,
         orderStatus: status,
+        coupon:couponOffer,
         orderedItems: orderedItems.products,
+        orderedPrice:orderedPrice
+        
       });
       await ordered.save();
-    
-
       let orderId = ordered._id;
-      console.log(orderId);
       resolve(orderId);
     });
   },

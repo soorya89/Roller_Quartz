@@ -7,7 +7,7 @@ const Coupon = require("../model/couponmodel");
 const Order = require("../model/ordermodel");
 const Offer = require("../model/offermodel");
 const voucherCode = require("voucher-code-generator");
-
+const ObjectId  = require('mongodb'); 
 const Address = require("../model/addressmodel");
 const fs = require("fs");
 
@@ -614,6 +614,57 @@ module.exports = {
         });
     });
   },
+ 
+
+  getChangeStatus: (changedStatus, orderId) => {
+    return new Promise((resolve, reject) => {
+      try {
+        let newStatus = changedStatus;
+        orderData.updateOne(
+          { _id: ObjectId(orderId) }, // Use ObjectId to match the order ID
+          { $set: { orderStatus: newStatus } }
+        )
+        .then((response) => {
+          console.log(response);
+          resolve(response);
+        })
+        .catch((error) => {
+          console.log(error);
+          reject(error);
+        });
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+    });
+  },
+
+
+getChangeStatus: (changedStatus, orderId) => {
+  return new Promise((resolve, reject) => {
+    try {
+      let newStatus = changedStatus;
+      orderData.updateOne(
+        { _id: ObjectId(orderId) }, // Use ObjectId to match the order ID
+        { $set: { orderStatus: newStatus } }
+      )
+      .then((response) => {
+        console.log(response);
+        resolve(response);
+      })
+      .catch((error) => {
+        console.log(error);
+        reject(error);
+      });
+    } catch (error) {
+      console.log(error);
+      reject(error);
+    }
+  });
+},
+
+  
+  
 };
 function orderStatusCount(orderStatuses) {
   //to display on doughnut chart

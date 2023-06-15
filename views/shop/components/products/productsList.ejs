@@ -50,6 +50,7 @@
                         <%= console.log(viewCategory) %>
                             <div class="categories__accordion">
                                 <ul>
+                                   
                                     <% viewCategory.forEach(function(category) { %>
 
                                         <li><label><input class="checkBox-input"type="checkbox"value="<%= category._id %>" id="category<%= i %>"  name="category<%= i %>"><label >                                                 
@@ -61,6 +62,7 @@
                             <div class="section-title">
                                 <h4>Brand</h4>
                             </div>
+                            <% var i=1 %>
                             <div class="categories__accordion">
                                 <ul>
                                     <% viewBrand.forEach(function(brand) { %>
@@ -113,7 +115,13 @@
                             <div class="product__item "data-category-id="<%= product.category %>">
                                 <div class="product__item__pic set-bg"
                                     data-setbg="/uploads/<%= product.productImage[product.featuredImage || 0] %>">
-                                    <!-- <div class="label new">New</div> -->
+                                    
+                                    <% if (product.productQuantity>1) { %>
+                                    <div class=" label new">In stock</div>
+                                  <% } else { %>
+                                     
+                                  <div class="label stockout stockblue">Out Of Stock</div>
+                                  <% } %>
                                     <ul class="product__hover">
 
                                         <li><button onclick="cartIncrement('<%=product._id%>')"><span
@@ -133,10 +141,8 @@
                                     <div class="product__price">
                                         &#x20B9 <%= product.productPrice %>
                                     </div>
-                                    <!-- <span
-                                    class="badge  text-success">
-                                    In stock
-                                </span> -->
+                                  
+                                    
                                 </div>
                             </div>
                         </div>
@@ -201,16 +207,20 @@ $('#filter-form').submit(function (e) {
     const max = document.getElementById('maxamount').value;
 
     let selectedCategories = [];
+    let selectedBrands = [];
     $('input:checked').each(function () {
         selectedCategories.push($(this).val());
     });
-   
-    filterData(selectedCategories, min, max);
-});
+    $('input:checked').each(function () {
+        selectedBrands.push($(this).val());
+    });
 
-function filterData(selectedCategories, min, max) {
+    filterData(selectedCategories,selectedBrands,min, max);
+});
+function filterData(selectedCategories,selectedBrands,min, max) {
     let data = {
         selectedCategories: selectedCategories,
+        selectedBrands:selectedBrands,
         min: min,
         max: max
     };
@@ -220,6 +230,7 @@ function filterData(selectedCategories, min, max) {
     $.ajax({
         url: '/product?filterData=' + data,
         type: 'get',
+        
     })
     .done((res) => {
 
@@ -253,7 +264,6 @@ function filterData(selectedCategories, min, max) {
 }
 checkboxes.forEach(function (checkbox) {
 		checkbox.addEventListener('change', function () {
-			console.log("change");
 
 			const checkboxeStates = Array.from(checkboxes).map(function (cb) {
 				return {
@@ -261,6 +271,7 @@ checkboxes.forEach(function (checkbox) {
 					checked: cb.checked
 				}
 			})
+            
 			localStorage.setItem('checkboxeStates', JSON.stringify(checkboxeStates))
 		})
 	});
@@ -291,49 +302,108 @@ window.addEventListener('load', function () {
 });
 
     
+    // function cartIncrement(productId) {
+
+
+    //     $.ajax({
+    //         url: '/addToCart',
+    //         data: {
+    //             productId: productId
+    //         },
+    //         method: 'post',
+    //         success: (response) => {
+    //             if (response.response) {
+    //                 if (response.limit) {
+    //                     Swal.fire(
+    //                         'sorry!',
+    //                         'sorry you have only buy 10 quantity or product i sout of stock',
+    //                         'warning'
+    //                     )
+    //                 } else {
+
+    //                     Swal.fire({
+    //                         position: 'top',
+    //                         icon: 'success',
+    //                         title: 'Product added to cart',
+    //                         showConfirmButton: false,
+    //                         timer: 1600
+    //                     })
+    //                 }
+    //             } else {
+                    
+    //                 Swal.fire({
+    //                     position: 'top',
+    //                     icon: 'alert',
+    //                     title: 'Login needed',
+    //                     showConfirmButton: false,
+    //                     timer: 1600
+    //                 })
+    //                 setTimeout(() => {
+
+    //                     window.location = '/login'
+    //                 }, 1700)
+    //             }
+    //         }
+    //     })
+    // }
+
     function cartIncrement(productId) {
-
-
-        $.ajax({
-            url: '/addToCart',
-            data: {
-                productId: productId
-            },
-            method: 'post',
-            success: (response) => {
-                if (response.response) {
-                    if (response.limit) {
-                        Swal.fire(
-                            'sorry!',
-                            'sorry you have only buy 10 quantity or product i sout of stock',
-                            'warning'
-                        )
-                    } else {
-
-                        Swal.fire({
-                            position: 'top',
-                            icon: 'success',
-                            title: 'Product added to cart',
-                            showConfirmButton: false,
-                            timer: 1600
-                        })
-                    }
-                } else {
-                    Swal.fire({
-                        position: 'top',
-                        icon: 'alert',
-                        title: 'Login needed',
-                        showConfirmButton: false,
-                        timer: 1600
-                    })
-                    setTimeout(() => {
-
-                        window.location = '/login'
-                    }, 1700)
-                }
-            }
-        })
+  $.ajax({
+    url: '/addToCart',
+    data: {
+      productId: productId
+    },
+    method: 'POST',
+    success: function (response) {
+      if (response.response) {
+        if (response.limit) {
+          Swal.fire(
+            'Sorry!',
+            'Sorry, you can only buy a maximum of 10 quantity or the product is out of stock.',
+            'warning'
+          );
+        } else {
+          Swal.fire({
+            position: 'top',
+            icon: 'success',
+            title: 'Product added to cart',
+            showConfirmButton: false,
+            timer: 1600
+          });
+        }
+      } else {
+        if (response.error === 'Product is out of stock') {
+          Swal.fire({
+            position: 'top',
+            icon: 'error',
+            title: 'Product out of stock',
+            showConfirmButton: false,
+            timer: 1600
+          });
+        } else {
+          Swal.fire({
+            position: 'top',
+            icon: 'alert',
+            title: 'Login needed',
+            showConfirmButton: false,
+            timer: 1600
+          });
+          setTimeout(() => {
+            window.location = '/login';
+          }, 1700);
+        }
+      }
+    },
+    error: function (xhr, status, error) {
+      console.error(xhr.responseText);
     }
+  });
+}
+
+
+
+
+
     // $(document).ready(function () {
 	// 	$('.add-produtToWishlist').click(function (e) {
 	// 		e.preventDefault();

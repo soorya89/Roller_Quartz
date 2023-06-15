@@ -7,14 +7,15 @@ const Category = require("../model/categorymodel");
 const Brand = require("../model/brandmodel");
 const Order = require("../model/ordermodel");
 const Offer = require("../model/offermodel");
+const Banner = require('../model/banner')
 const Address = require("../model/addressmodel");
 const ObjectId = require("mongoose").Types.ObjectId;
 const mongoose = require("mongoose");
 const PDFDocument = require("pdfkit");
 const generateSalesReport = require("../config/pdfkit");
-
 const toastr = require("toastr");
 const { DataSessionInstance } = require("twilio/lib/rest/wireless/v1/sim/dataSession");
+const { locals } = require("../routes/userRouter");
 module.exports = {
   AdminHomePage: async (req, res) => {
     try {
@@ -624,6 +625,62 @@ deActiveOffer:async(req,res)=>{
     }
   },
 
+  
+  getBanner: async (req, res) => {
+    try {
+      if (req.session.admin) { 
+     
+      const bannerList = await Banner.find({})
+      const data={ req: req, currentUrl: req.url,bannerList,message: "Banner added" }
+      res.render('admin/banner',data)
+      }else{
+        res.redirect("/admin/login"); 
+      }
+    } catch (error) {
+      console.log(error)
+      res.status(500).render('error', { error });
+    }
+  },
+  addBanner: async (req, res) => {
+    try {
+      const { name, description } = req.body;
+      const image = req.files;
+  
+      console.log('Name:', name);
+      console.log('Description:', description);
+      console.log('Images:', image);
+  
+      const newBanner = new Banner({
+        name: name,
+        image:  image.map((image) => image.filename),
+        description: description,
+      });
+  
+      const banner = await newBanner.save();
+      if (banner) {
+        res.send({response:true, message: "Banner added" });
+      } else {
+        res.send({response:false, message: "Something went wrong" });
+      }
+    } catch (error) {
+     
+      res.status(500).render('error', { error });
+    }
+  },
+  getChangeStatus: (req, res) => {
+    console.log(req.body, req.params.id);
+    adminHelpers.getChangeStatus(req.body.selectedValue, req.params.id)
+      .then(() => {
+        res.json({ status: true });
+      })
+      .catch((error) => {
+        console.log(error);
+        res.json({ status: false });
+      });
+  },
+  
+  
+  
 };
 
 function currencyFormat(amount) {

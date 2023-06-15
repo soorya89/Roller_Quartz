@@ -6,6 +6,21 @@
             row-gap: 15px;
             column-gap: 15px;
         }
+    
+    /* CSS code */
+    .wallet-container {
+        margin-bottom: 10px;
+    }
+
+    .wallet-label {
+        font-weight: bold;
+    }
+
+    .wallet-amount {
+        color: green;
+        font-size: 1.2em;
+    }
+
     </style>
     <!-- Checkout Section Begin -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -154,11 +169,12 @@
                 <div class="col-lg-4" style="margin-top: 27px;">
                     <div class="discount__content mb-2">
                         <h6>Discount codes</h6>
-                        <form action="#">
+                        
                             <input type="text" name="couponCode" id="couponCode" placeholder="Enter your coupon code">
                             <button type="button" class="site-btn" onclick="applyCoupon('<%= total%>')">Apply</button>
 
-                        </form>
+                       <input type="text" name="discountAmount" id="discountAmount" hidden>
+
                         <button type="button" style="margin-top: 12px;margin-top: 8px;padding:8px"
                             class="btn btn-dark btn-sm" data-toggle="modal" data-target="#showCoupen">
                             Select Coupon
@@ -247,7 +263,7 @@
                             <ul>
 
                                 <li>Discount <span id="discount">
-                                    &#x20B9; 0
+                                    &#x20B9; 0.00
                                     </span></li>
                             </ul>
                             <ul>
@@ -283,9 +299,9 @@
                                 <span class="checkmark"></span>
                             </label>
                         </div>
-                        <div >
-                            <label for="walletBalance">Wallet Balance:</label>
-                            <span>&#x20B9; <%= wallet.walletBalance %></span>
+                        <div class="wallet-container">
+                            <label class="wallet-label" for="walletBalance">Wallet Balance:</label>
+                            <span class="wallet-amount">&#x20B9; <%= wallet.walletBalance %></span>
                         </div>
                         
                         <button type="submit" id="placeOrder-btn" class="site-btn">Place oder</button>
@@ -318,12 +334,15 @@
             $(document).ready(function () {
                 var checkedRadio = document.querySelector('.billing-address:checked');
                 dataValue = checkedRadio.getAttribute('data-value');
+                
 
                 $('#placeOrder-btn').on('click', function (e) {
                     e.preventDefault();
                     console.log(dataValue);
                     var payment_method = $('input[name="payment"]:checked').val();
                     var total = $('#totalAmount').text().replace(/[^\d\.]/g, '').trim()
+                    let couponOffer = document.getElementById('discountAmount').value;
+                    
                     Swal.fire({
                         title: 'Are you sure?',
                         text: "You won't be able to revert this!",
@@ -340,7 +359,7 @@
 
                                 type: 'POST',
                                 url: '/placeOrder',
-                                data: { address_id: dataValue, payment_method: payment_method, total: total },
+                                data: { address_id: dataValue, payment_method: payment_method, total: total, coupon:couponOffer },
 
                                 success: function (response) {
                                     if (response.status==true) {
@@ -523,8 +542,6 @@
             }
 
 
-
-
             function applyCoupon(totalAmount) {
                 const couponCode = document.getElementById('couponCode').value;
                 console.log(couponCode);
@@ -538,6 +555,7 @@
                 }).done((res) => {
                     if (res.status === true) {
                         document.getElementById('discount').innerHTML = res.discount;
+                        document.getElementById('discountAmount').value = res.discount;
                         document.getElementById('totalAmount').innerHTML = res.total;
                         Swal.fire({
                             position: 'center',

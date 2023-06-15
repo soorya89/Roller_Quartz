@@ -29,9 +29,36 @@ module.exports = {
             productPrice:{$gte: Number(filterData.min),$lte: Number(filterData.max)}
         }).lean()
       
-
+        
         resolve(filteredProducts)
 
     })
 },
+// filterProduct: async function (filterData) {
+//   try {
+//     const { selectedCategories, selectedBrands, min, max } = filterData;
+//     let query = { productStatus: true };
+
+//     if (selectedCategories && selectedCategories.length > 0) {
+//       query.category = { $in: selectedCategories };
+//     }
+
+//     if (selectedBrands && selectedBrands.length > 0) {
+//       query.brand = { $in: selectedBrands };
+//     }
+
+//     if (min && max) {
+//       query.productPrice = { $gte: min, $lte: max };
+//     }
+
+//     const products = await Product.find(query).lean();
+//     return products;
+//   } catch (error) {
+//     throw error;
+//   }
+// }
+
+
+
+
 };

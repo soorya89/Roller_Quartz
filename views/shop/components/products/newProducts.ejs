@@ -8,26 +8,29 @@
             </div>
             
         </div>
+        
         <div class="row property__gallery">
+            <% product.forEach(function(product){ %>
             <div class="col-lg-3 col-md-4 col-sm-6 mix women">
                 <div class="product__item">
-                    <div class="product__item__pic set-bg" data-setbg="../../../images/pr-1.png">
-                        <div class="label new">New</div>
+                    <div class="product__item__pic set-bg" data-setbg="/uploads/<%= product.productImage[product.featuredImage || 0] %>">
+                        <!-- <div class="label new">New</div> -->
                         <ul class="product__hover">
-                            <li><a href="../../../images/pr-1.png" class="image-popup"><span class="arrow_expand"></span></a></li>
-                            <li><a href="#"><span class="icon_heart_alt"></span></a></li>
-                            <li><a href="#"><span class="icon_bag_alt"></span></a></li>
+                            <li><a href="/uploads/<%= product.productImage[product.featuredImage || 0] %>" class="image-popup"><span class="arrow_expand"></span></a></li>
+                            <!-- <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                            <li><a href="#"><span class="icon_bag_alt"></span></a></li> -->
                         </ul>
                     </div>
                     <div class="product__item__text">
-                        <h6><a href="#">Buttons tweed blazer</a></h6>
+                        <h6><a href="/productDetails/<%=product._id %>"><%= product.productName%></a></h6>
                       
-                        <div class="product__price">$ 59.0</div>
-                        <a href="/productDetails" class="btn btn-dark">Buy</a>
+                        <div class="product__price"> &#x20B9 <%= product.productPrice %></div>
+                        
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 mix men">
+            <% })%>
+            <!-- <div class="col-lg-3 col-md-4 col-sm-6 mix men">
                 <div class="product__item">
                     <div class="product__item__pic set-bg" data-setbg="../../../images/pr-3.png">
                         <ul class="product__hover">
@@ -148,7 +151,7 @@
                         <a href="/productDetails" class="btn btn-dark">Buy</a>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </section>

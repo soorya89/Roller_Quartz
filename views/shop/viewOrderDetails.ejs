@@ -69,12 +69,17 @@
           <div>
           
             <h3>Order Summary</h3>
-
+            <p class="d-flex justify-content-between">
+              Discounted Amount:<b
+                >&#x20B9; <%=orderdetails.coupon%></b
+              >
+            </p>
             <p class="d-flex justify-content-between">
               Item(s) Price Subtotal:<b
                 >&#x20B9; <%=orderdetails.totalAmount%></b
               >
             </p>
+           
             <h4 class="d-flex justify-content-between">
               Total:<b>&#x20B9; <%=orderdetails.totalAmount%></b>
             </h4>
@@ -104,7 +109,7 @@
             </div>
             <div>
               <h3 class="mb-0">
-                <b>&#x20B9; <%=product.orderedProduct.productPrice%></b>
+                <b>&#x20B9; <%=product.orderedPrice%></b>
               </h3>
             </div>
             

@@ -29,7 +29,6 @@ module.exports = {
   //   });
   // },
   addItemToWishList: (productId, userId) => {
-    console.log("888888888");
     return new Promise(async (resolve, reject) => {
       if (!userId) {
         resolve({ response: false });
@@ -131,7 +130,8 @@ module.exports = {
   getWishListCount: (userId) => {
     return new Promise(async (resolve, reject) => {
       let wishlist = await wishListSchema.findOne({ user: userId });
-      let wishlistCount = wishlist.products.length;
+      let wishlistCount =
+      wishlist && wishlist.products ? wishlist.products.length : 0;
       resolve(wishlistCount);
     });
   },
