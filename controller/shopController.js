@@ -80,7 +80,7 @@ module.exports = {
         });
         await newUser.save();
         req.session.login = true;
-        req.session.user = user;
+        req.session.user = newUser;
         res.redirect("/");
       } else {
         res.redirect("/login");
@@ -186,7 +186,7 @@ module.exports = {
       const user = req.session.user;
       let userId = req.session.user._id;
       let cartCount = await userHelper.getCartCount(userId);
-      wishListCount = await wishlisthelper.getWishListCount(userId); 
+      let wishListCount = await wishlisthelper.getWishListCount(userId); 
       const product = await Product.find({ productStatus: { $eq: true } }).sort({ createdAt: 1 })
       const bannerList= await bannerData.find({})
       console.log(bannerList)
@@ -239,9 +239,6 @@ module.exports = {
           startIndex: startIndex,
           endIndex: endIndex,
         };
-        // let userId = req.session.user._id;
-        // let cartCount = await userHelper.getCartCount(userId);
-        // wishListCount = await wishlisthelper.getWishListCount(userId);
         const viewCategory = await adminHelpers.getAllCategory();
         const viewBrand = await adminHelpers.getAllBrand();
         const product = await Product.find({ productStatus: { $eq: true } })
@@ -349,7 +346,7 @@ module.exports = {
       let total = await userHelper.getCartTotal(user);
       let coupon=await Coupon.find()
       const wallet=await walletSchema.findOne({user:userId})    
-      const data = { user,coupon, total,wallet,Addresses, cart, products,req: req, currentUrl: req.url };
+      const data = { user,coupon, total,wallet:wallet || {},Addresses, cart, products,req: req, currentUrl: req.url };
       res.render("shop/checkOut", data);
     } catch (error) {
       res.status(500).render('error', { error });

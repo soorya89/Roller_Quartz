@@ -69,11 +69,15 @@
           <div>
           
             <h3>Order Summary</h3>
+            <% if (orderdetails.coupon) { %>
+             
+           
             <p class="d-flex justify-content-between">
               Discounted Amount:<b
                 >&#x20B9; <%=orderdetails.coupon%></b
               >
             </p>
+            <% } %>
             <p class="d-flex justify-content-between">
               Item(s) Price Subtotal:<b
                 >&#x20B9; <%=orderdetails.totalAmount%></b

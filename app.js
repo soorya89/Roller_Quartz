@@ -106,7 +106,7 @@ app.use(function (err, req, res, next) {
     res.status(404).render("404");
   } else {
     res.status(err.status || 500);
-    res.render("error", { error: err });
+    res.render("error", { error: err, message: err.message });
   }
 });
 

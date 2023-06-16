@@ -92,8 +92,8 @@
                                 <% } else { %>
                                     <li><a href="/"><span class="icon_bag_alt"></span>
                                         <% } %>
-                                        <% if (locals.cartCount && locals.cartCount.count) { %>
-                                            <div class="tip"><%= locals.cartCount.count %></div>
+                                        <% if (locals.cartCount) { %>
+                                            <div class="tip"><%= cartCount %></div>
                                           <% } else { %>
                                             <div></div>
                                           <% } %>
