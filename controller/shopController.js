@@ -161,9 +161,9 @@ module.exports = {
         });
     } catch (err) {
       console.error(err);
-      // res.render("catchError", {
-      //   message: err.message,
-      // });
+      res.render("catchError", {
+        message: err.message,
+      });
     }
   },
 
@@ -205,7 +205,7 @@ module.exports = {
       const data={currentUrl: req.url,product,bannerList}
       res.render("shop/home",data)
     } catch (error) {
-      console.error(err);
+      console.error(error);
     }
   },
 
@@ -313,13 +313,26 @@ module.exports = {
       const user = req.session.user;
       let userId = req.session.user._id;
       const address = await Address.find({ user: userId });
-      let coupon=await Coupon.findOne({user:userId})
+      let coupon = await Coupon.findOne({ user: userId });
       let cartCount = await userHelper.getCartCount(userId);
       wishListCount = await wishlisthelper.getWishListCount(userId);
+      const wallet = await walletSchema.findOne({ user: userId });
       const orders = await userHelper.getAllOrderDetailsOfAUser(userId);
-      const data=  { user, orders, address,coupon,cartCount,wishListCount ,req: req, currentUrl: req.url}
-      res.render("shop/userProfiles/myProfile",data);
-    } catch (error) {}
+      const data = {
+        user,
+        orders,
+        address,
+        coupon,
+        cartCount,
+        wishListCount,
+        wallet: wallet || {},
+        req: req,
+        currentUrl: req.url,
+      };
+      res.render("shop/userProfiles/myProfile", data);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
   },
 
   category: async (req, res) => {
@@ -337,41 +350,76 @@ module.exports = {
   checkOut: async (req, res, next) => {
     try {
       const user = req.session.user;
-      const userId=req.session.user._id
+      const userId = req.session.user._id;
+
+      const [wishListCount, cartCount] = await Promise.all([
+        userId ? wishlisthelper.getWishListCount(userId) : null,
+        userId ? userHelper.getCartCount(userId) : null,
+      ]);
+
       const Addresses = await Address.find({ user: req.session.user._id });
       const cart = await Cart.findOne({ user: user._id }).populate(
         "products.productId"
       );
       const products = cart.products;
       let total = await userHelper.getCartTotal(user);
-      let coupon=await Coupon.find()
-      const wallet=await walletSchema.findOne({user:userId})    
-      const data = { user,coupon, total,wallet:wallet || {},Addresses, cart, products,req: req, currentUrl: req.url };
+      let coupon = await Coupon.find();
+      const wallet = await walletSchema.findOne({ user: userId });
+      const data = {
+        user,
+        coupon,
+        total,
+        wallet: wallet || {},
+        Addresses,
+        cart,
+        products,
+        wishListCount,
+        cartCount,
+        req: req,
+        currentUrl: req.url,
+      };
       res.render("shop/checkOut", data);
     } catch (error) {
-      res.status(500).render('error', { error });
+      res.status(500).render("error", { error });
     }
   },
 
   productDetails: async (req, res, next) => {
     try {
       let productId = req.params.id;
-      const user = req.session.user;
+      let user = null;
+      let userId = null;
+      let wishListCount = null;
+      let cartCount = null;
+
+      if (req.session.user) {
+        user = req.session.user;
+        userId = user._id;
+        wishListCount = await wishlisthelper.getWishListCount(userId);
+        cartCount = await userHelper.getCartCount(userId);
+      }
       const product = await Product.findById(productId);
       const brand = await Brand.findById(product.brand);
       const cart = await Cart.findOne({ user: user }).populate(
         "products.productId"
       );
-      const data = { user, req: req, currentUrl: req.url,product,brand, cart, };
+      const data = { user, req: req, currentUrl: req.url,product,brand, cart,wishListCount,cartCount };
       res.render("shop/components/products/productDetails", data);
     } catch (error) {
-      res.status(500).render('error', { error });
+      const message = error.message;
+      res.status(500).render('error', { error, message: error.message });
     }
   },
 
   shopCartPage: async (req, res) => {
     try {
       const user = req.session.user;
+
+      const userId = user ? user._id : null;
+      const [wishListCount, cartCount] = await Promise.all([
+        userId ? wishlisthelper.getWishListCount(userId) : null,
+        userId ? userHelper.getCartCount(userId) : null,
+      ]);
       const message = req.session.message;
       const data = {
         user,
@@ -389,6 +437,7 @@ module.exports = {
         const products = cart.products;
         const message = req.session.message;
         const countCart = products.length;
+
         let total = await userHelper.getCartTotal(user);
         const data = {
           user,
@@ -396,7 +445,9 @@ module.exports = {
           countCart,
           message,
           cart,
+          wishListCount,
           total,
+          cartCount,
           req: req,
           currentUrl: req.url,
         };
@@ -587,22 +638,38 @@ module.exports = {
 
   viewOrderDetails: async (req, res) => {
     try {
-      const user = req.session.user;
+      
       const orderId = req.params.id;
+      let user = null;
+      let userId = null;
+      let wishListCount = null;
+      let cartCount = null;
+
+      if (req.session.user) {
+        user = req.session.user;
+        userId = user._id;
+        wishListCount = await wishlisthelper.getWishListCount(userId);
+        cartCount = await userHelper.getCartCount(userId);
+      }
+
       let orderdetails = await Order.findOne({
         _id: orderId,
         user: req.session.user._id,
       });
       // let couponDetails=await userHelper.couponDetails(orderId)
       const address = await Address.findOne({ _id: orderdetails.address });
+      const wallet=await walletSchema.findOne({user:req.session.user._id})
+      
       let productDetails = await userHelper.getOrderedProductsDetails(orderId);
       const data= {
         user,
         orderId,
-        
+        wallet,
         address,
         orderdetails,
         productDetails,
+        wishListCount,
+        cartCount,
         req: req, currentUrl: req.url 
       }
       res.render("shop/viewOrderDetails",data );

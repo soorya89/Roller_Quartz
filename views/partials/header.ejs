@@ -3,11 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Ashion Template">
-    <meta name="keywords" content="Ashion, unica, creative, html">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="Roller Watches - Your Destination for Stylish Men's and Women's Watches" />
+    <meta name="keywords" content="Roller Watches, men's watches, women's watches, smart watches, quartz watches, online shopping" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Roller Watches</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
@@ -39,7 +40,7 @@
     <div class="offcanvas-menu-wrapper">
         <div class="offcanvas__close">+</div>
         <ul class="offcanvas__widget">
-            <li><span class="icon_search search-switch"></span></li>
+           
             <li><a href="/wishlist"><span class="icon_heart_alt"></span>
                 <div class="tip">2</div>
             </a></li>
@@ -75,7 +76,7 @@
                         
                         <ul class="header__right__widget">
                            
-                            <li><span class="icon_search search-switch"></span></li>
+                            
                             <% if (locals.user) { %>
                             <li><a href="/wishlist"><span class="icon_heart_alt"></span>
                                 <% } else { %> 
@@ -90,9 +91,9 @@
                             <% if (locals.user) { %>
                             <li><a href="/shopCart"><span class="icon_cart_alt"></span>
                                 <% } else { %>
-                                    <li><a href="/"><span class="icon_bag_alt"></span>
+                                    <li><a href="/"><span class="icon_cart_alt"></span>
                                         <% } %>
-                                        <% if (locals.cartCount) { %>
+                                        <% if (locals.cartCount > 0) { %>
                                             <div class="tip"><%= cartCount %></div>
                                           <% } else { %>
                                             <div></div>
